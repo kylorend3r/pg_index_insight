@@ -1,0 +1,8 @@
+venv/
+pg_index_env/
+todo.md
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+refresh.sh
