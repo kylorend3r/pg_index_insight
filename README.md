@@ -52,8 +52,14 @@ pip install -r requirements.txt
 pip install -e .
 
 ```
+
 ## Usage
 
+### Installation
+
+```bash
+pip3 install pg_index_insight
+```
 To use pg_index_insight, simply run the following command in your terminal:
 
 ```bash
@@ -61,10 +67,11 @@ pg_index_insight [command] [options]
 ```
 
 ```bash
-pg_index_insight list-invalid-indexes
-pg_index_insight list-duplicate-indexes
-pg_index_insight list-inefficient-or-redundant-indexes
-pg_index_insight list-bloated-btree-indexes 
+pgindexinsight list-unused-or-old-indexes
+pgindexinsight list-invalid-indexes
+pgindexinsight list-duplicate-indexes
+pgindexinsight list-inefficient-or-redundant-indexes
+pgindexinsight list-bloated-btree-indexes
 ```
 
 ## Contributing
