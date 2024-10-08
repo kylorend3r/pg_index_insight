@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from .queries import SqlQueries
-
+import logging
 
 class DatabaseManager:
     """
@@ -26,7 +26,17 @@ class DatabaseManager:
         fetch_invalid_indexes(): Identifies invalid indexes that require attention.
         fetch_unused_indexes(): Retrieves indexes that have not been used in a specified timeframe.
     """
-    MIN_SUPPORTED_VERSION = 17
+    logger = logging.getLogger("pgindexinsight")
+    logger.setLevel(logging.WARNING)  # Set default logging level to DEBUG
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.WARNING)  # Set console log level (can adjust to DEBUG if needed)
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    MIN_SUPPORTED_VERSION = 12
     SYSTEM_DATABASE_LIST = ['postgres','template0','template1']
     def __init__(self):
         self.connection = None
@@ -62,10 +72,25 @@ class DatabaseManager:
                     application_name="pgindexinsight",
                 )
                 self.connection.autocommit = True
+                self.check_superuser()
             except Exception as e:
                 raise ConnectionError(f"Error connecting to the database: {str(e)}")
 
         return self.connection
+
+    def check_superuser(self):
+        """Checks if the connected user is a superuser and logs a debug message."""
+        try:
+            with self.connection.cursor() as cur:
+                cur.execute("SELECT current_setting('is_superuser')")
+                is_superuser = cur.fetchone()[0]
+                if is_superuser == 'on':
+                    DatabaseManager.logger.warning("Connected as a superuser.")
+                else:
+                    DatabaseManager.logger.warning("Connected as a regular user.")
+        except Exception as e:
+            DatabaseManager.logger.error(f"Failed to check superuser status: {e}")
+
 
     def close(self):
         """Closes the database connection."""
