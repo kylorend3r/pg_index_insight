@@ -30,6 +30,8 @@ class DatabaseManager:
         self.connection = None
         self.replica_node_exists = None
         self.recovery_status = None
+        self.database_version=None
+        self.minimum_database_version_supported=12.0
         self.collect_facts()
 
     def connect(self):
@@ -88,9 +90,16 @@ class DatabaseManager:
                 self.replica_node_exists = True
             else:
                 self.replica_node_exists = False
-
+            db_cursor.execute('select version()')
+            database_version=db_cursor.fetchall()
+            database_version=float(str(database_version[0][0]).split(' ')[1])
+            self.database_version=database_version
+            
     def get_unused_and_invalid_indexes(self):
         """Retrieves a list of unused, invalid, and duplicate indexes in the database."""
+        if not (self.database_version>self.minimum_database_version_supported):
+            print('PostgreSQL version 12.0 and higher supported.')
+            exit(1)
         try:
             conn = self.connect()
 
@@ -141,6 +150,9 @@ class DatabaseManager:
 
     def get_bloated_indexes(self):
         """Finds duplicate B-tree indexes in the database."""
+        if not (self.database_version>self.minimum_database_version_supported):
+            print('PostgreSQL version 12.0 and higher supported.')
+            exit(1)
         try:
             conn = self.connect()
             with conn.cursor() as cur:
@@ -165,6 +177,9 @@ class DatabaseManager:
 
     def get_duplicate_btree_indexes(self):
         database_connection = self.connect()
+        if not (self.database_version>self.minimum_database_version_supported):
+            print('PostgreSQL version 12.0 and higher supported.')
+            exit(1)
         with database_connection.cursor() as database_cursor:
             database_cursor.execute(SqlQueries.find_exact_duplicate_index())
             duplicate_indexes = database_cursor.fetchall()
@@ -182,6 +197,9 @@ class DatabaseManager:
 
     def fetch_invalid_indexes(self):
         """Identifies invalid indexes that may need to be cleaned or rebuilt."""
+        if not (self.database_version>self.minimum_database_version_supported):
+            print('PostgreSQL version 12.0 and higher supported.')
+            exit(1)
         database_connection = self.connect()
         with database_connection.cursor() as database_cursor:
             database_cursor.execute(SqlQueries.find_invalid_indexes())
@@ -201,6 +219,9 @@ class DatabaseManager:
 
     def fetch_unused_indexes(self):
         """Retrieves indexes that have not been used in over a specified timeframe."""
+        if not (self.database_version>self.minimum_database_version_supported):
+            print('PostgreSQL version 12.0 and higher supported.')
+            exit(1)
         database_connection = self.connect()
         with database_connection.cursor() as database_cursor:
             database_cursor.execute(SqlQueries.find_unused_indexes())
