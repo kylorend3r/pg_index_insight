@@ -5,4 +5,17 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
-refresh.sh
+refresh.s*
+tests.sh
+pg_index_insight.egg-info
+todo.md
+
+ 1669* pgindexinsight --help
+ 1670* export DB_HOST="localhost"\nexport DB_PORT="5433"\nexport DB_NAME="index_efficiency"\nexport DB_USER="test_user"\nexport DB_PASSWORD="test123"
+ 1671* pgindexinsight list-invalid-indexes
+ 1672  bash tests.sh
+ 1673  twine upload dist/* --verbose
+ 1674* pip3 uninstall pg_index_insight
+ 1675* pip3 install pg_index_insight
+ 1676* pgindexinsight list-unused-or-old-indexes\npgindexinsight list-invalid-indexes\npgindexinsight list-duplicate-indexes\npgindexinsight list-inefficient-or-redundant-indexes\npgindexinsight list-bloated-btree-indexes
+ 1677  hist

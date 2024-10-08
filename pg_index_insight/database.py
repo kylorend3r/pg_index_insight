@@ -152,9 +152,9 @@ class DatabaseManager:
                         "database_name": index[0],
                         "index_name": index[3],
                         "bloat_ratio": float(format(index[9], ".1f")),
-                        "category": "High Bloated Index(Greater Than >60). Consider re-indexing",
+                        "category": "High Bloated Index(Greater Then >60). Consider re-indexing",
                     }
-                    if indexModel.get("bloat_ratio") > 0:
+                    if indexModel.get("bloat_ratio") > 60:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 

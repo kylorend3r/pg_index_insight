@@ -1,23 +1,25 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pg_index_insight',  # The name of your package
-    version='0.1.0',  # Initial version
+    name='pg_index_insight',
+    version='0.0.6',
     author='Huseyin Demir',
     author_email='huseyin.d3r@gmail.com',
-    description='A Python CLI tool to analyze PostgreSQL indexes',
+    description='A CLI tool for analyzing PostgreSQL index efficiency',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/kylorend3r/pg_index_insightt',  # Link to your project
-    packages=find_packages(),
+    url='https://github.com/kylorend3r/pg_index_insight',  
+    packages=find_packages(), 
+    include_package_data=True,
+    python_requires='>=3.6',
     install_requires=[
-        'click',  # List your dependencies here
+        'click', 
         'psycopg2',
         'tabulate'
     ],
     entry_points={
         'console_scripts': [
-            'pg_index_insight = pg_index_insight.cli:main',
+            'pgindexinsight=pg_index_insight.cli:main',
         ],
     },
     classifiers=[
@@ -25,5 +27,4 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.7',  # Python version compatibility
 )
