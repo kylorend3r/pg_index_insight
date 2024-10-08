@@ -1,35 +1,34 @@
-# pg_index_insight
+# pgindexinsight
+pgindexinsight is a command-line interface (CLI) tool designed to help PostgreSQL users analyze and optimize the efficiency of their database indexes. The tool highlights inefficient indexes, offering insights to improve space utilization, vacuum operations, and overall database performance without the need for external extensions or packages.
 
-**pg_index_insight** is a command-line interface (CLI) tool designed to help PostgreSQL users analyze and improve the efficiency of their database indexes. This tool highlights inefficient indexes to optimize space utilization, vacuum operations, and overall database performance.
+# Why Choose pgindexinsight?
+pgindexinsight offers a simple yet powerful way to ensure that your PostgreSQL indexes are running efficiently. Here are key reasons to choose this tool:
 
-## Why 
+- No Extensions or Packages Required: Unlike other PostgreSQL performance tools, pgindexinsight doesn’t require the installation of any database extensions or other packages. It keeps your database setup clean and reduces complexity.
+- No Need to Memorize Index Queries: The tool uses pre-defined queries to analyze your indexes, so you don’t have to recall or memorize the correct index analysis queries every time. This provides a hassle-free experience for database inspection.
+- Minimal Setup: The tool is easy to install and use. Whether you're a beginner or a seasoned database administrator, pgindexinsight is designed to make index management intuitive and straightforward.
+- Portable & Lightweight: As a standalone CLI tool, pgindexinsight can be run in any environment with PostgreSQL access. There’s no dependency on external software, so you can freely install or remove it whenever needed.
 
-`pg_index_insight` is designed to be a simple and effective tool for ensuring your PostgreSQL indexes are efficient. Here are a few reasons why you might prefer using this CLI tool:
+## Key Features
+1. Index Usage Analysis: Detect redundant, unused, or bloated indexes and ensure your database operates efficiently.
+2. Comprehensive Reporting: Generate detailed reports on index health, usage, and redundancy.
+3. JSON Export Support: Easily export the results of your analyses in JSON format for further processing or integration with other systems.
+4. User-Friendly CLI: The tool is designed with ease of use in mind, allowing database administrators and developers to get started with minimal effort.
 
-- **No extensions required**: Unlike some PostgreSQL performance tools, `pg_index_insight` does not require you to install any database extensions. This keeps your database clean and avoids the complexity of extension management.
-  
-- **Custom queries without hassle**: With `pg_index_insight`, you can easily run queries to assess index efficiency without needing to modify or set up complex exporters like in Prometheus.
+## Benefits
 
-- **Straightforward**: The tool is user-friendly and designed for simplicity. If you’re looking for a tool that allows you to inspect your database's indexes with minimal setup, this CLI will serve your needs well.
-
-- **Portable**: As a standalone CLI tool, you can run it on any environment where you have access to your PostgreSQL database. No additional software or extensive configurations are necessary.
-
-
-## Features
-
-- Analyze index usage and detect redundant indexes.
-- Generate reports on index efficiency.
-- Support for JSON export of results.
-- Easy-to-use command-line interface.
+- Keep your PostgreSQL database clean: No need to install or manage third-party database extensions.
+- Flexible: Run the tool only when needed, and easily remove it afterward if no longer required.
+- Empowers Database Administrators: Get valuable insights into your index usage to optimize performance and space, without any extra overhead.
 
 
-## Requirements
+# Requirements
 
 - Python 3.6 or higher
-- PostgreSQL 9.6 or higher
+- PostgreSQL 12 or higher
 - Required Python packages (listed in `requirements.txt`)
 
-## Installation
+# Installation
 
 1. Clone the repository:
 
@@ -53,9 +52,9 @@ pip install -e .
 
 ```
 
-## Usage
+# Usage
 
-### Installation
+## Installation
 
 ```bash
 pip3 install pg_index_insight
@@ -63,7 +62,7 @@ pip3 install pg_index_insight
 To use pg_index_insight, simply run the following command in your terminal:
 
 ```bash
-pg_index_insight [command] [options]
+pgindexinsight [command] [options]
 ```
 
 ```bash
