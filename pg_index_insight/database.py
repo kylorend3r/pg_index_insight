@@ -47,13 +47,10 @@ class DatabaseManager:
                 user = os.getenv("DB_USER")
                 password = os.getenv("DB_PASSWORD")
 
-                # Ensure required variables are set
                 if not all([dbname, user, password]):
                     raise ValueError(
                         "Missing one or more required environment variables: DB_NAME, DB_USER, DB_PASSWORD"
                     )
-
-                # Connect to PostgreSQL
                 self.connection = psycopg2.connect(
                     host=host,
                     port=port,
