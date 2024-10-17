@@ -141,7 +141,7 @@ class DatabaseManager:
                     final_result.append(
                         {
                             "database_name": os.getenv("DB_NAME"),
-                            "schema_name": 'bok',
+                            "schema_name": row[0],
                             "index_name": row[2],
                             "category": "Unused&Redundant Index",
                         }
@@ -153,12 +153,11 @@ class DatabaseManager:
                     final_result.append(
                         {
                             "database_name": os.getenv("DB_NAME"),
-                            "schema_name": 'bok',
+                            "schema_name": row[0],
                             "index_name": row[2],
                             "category": "Invalid Index",
                         }
                     )
-
                 if len(final_result) == 0:
                     return "No results found."
                 return final_result
@@ -184,7 +183,7 @@ class DatabaseManager:
                         "bloat_ratio": float(format(index[9], ".1f")),
                         "category": "Bloated Index.",
                     }
-                    if indexModel.get("bloat_ratio") >= 0:
+                    if indexModel.get("bloat_ratio") > 0:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 
