@@ -109,7 +109,7 @@ def list_invalid_indexes():
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_inefficient_or_redundant_indexes(json):
+def list_unemployed_indexes(json):
     """
     Connects to the PostgreSQL database and identifies inefficient indexes, 
     which may include unused or invalid indexes that do not contribute to query 
@@ -262,7 +262,7 @@ def main():
     - list_unused_or_old_indexes: Lists indexes that are no longer in use.
     - list_invalid_indexes: Identifies indexes that are misconfigured or corrupted.
     - list_duplicate_indexes: Finds duplicate B-tree indexes.
-    - list_inefficient_or_redundant_indexes: Reports on indexes that are underperforming.
+    - list_unemployed_indexes: Reports on indexes that are underperforming.
     - list_bloated_btree_indexes: Detects indexes with excessive unused space.
 
     To use this tool, invoke it from the command line and specify a command.
@@ -272,7 +272,7 @@ def main():
 
 main.add_command(list_bloated_btree_indexes)
 main.add_command(list_duplicate_indexes)
-main.add_command(list_inefficient_or_redundant_indexes)
+main.add_command(list_unemployed_indexes)
 main.add_command(list_invalid_indexes)
 main.add_command(list_unused_or_old_indexes)
 
