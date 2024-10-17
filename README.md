@@ -1,6 +1,12 @@
 # pgindexinsight
 pgindexinsight is a command-line interface (CLI) tool designed to help PostgreSQL users analyze and optimize the efficiency of their database indexes. The tool highlights inefficient indexes, offering insights to improve space utilization, vacuum operations, and overall database performance without the need for external extensions or packages.
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
 # Why Choose pgindexinsight?
 pgindexinsight offers a simple yet powerful way to ensure that your PostgreSQL indexes are running efficiently. Here are key reasons to choose this tool:
 
@@ -30,18 +36,20 @@ pgindexinsight offers a simple yet powerful way to ensure that your PostgreSQL i
 
 # Installation
 
+## Installation from Source
+
 1. Clone the repository:
 
 ```bash
-   git clone https://github.com/yourusername/pg_index_insight.git
-   cd pg_index_insight
+git clone https://github.com/yourusername/pg_index_insight.git
+cd pg_index_insight
 ```
 
 2. Set up a virtual environment (optional but recommended):
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+source venv/bin/activate
 ```
 
 3.Install the required packages:
@@ -52,26 +60,41 @@ pip install -e .
 
 ```
 
+## Installation via Package Manager
+
+```bash
+pip3 install pg_index_insight
+```
+## ⚠️ **Warning**
+
+**Please ensure that you are working with proper python virtual env! It is not an obligation but strongly suggested.**
+
+
 # Usage
 
 ## Installation
 
 ```bash
-pip3 install pg_index_insight
-```
-To use pg_index_insight, simply run the following command in your terminal:
-
-```bash
 pgindexinsight [command] [options]
 ```
+
+## Examples
 
 ```bash
 pgindexinsight list-unused-or-old-indexes
 pgindexinsight list-invalid-indexes
 pgindexinsight list-duplicate-indexes
-pgindexinsight list-inefficient-or-redundant-indexes
+pgindexinsight list_unemployed_indexes
 pgindexinsight list-bloated-btree-indexes
 ```
+
+### Available Commands
+
+- `list-unused-or-old-indexes`: Lists unused or outdated indexes.
+- `list-invalid-indexes`: Identifies invalid indexes.
+- `list-duplicate-indexes`: Finds duplicate indexes.
+- `list-unemployed-indexes`: Lists unused indexes.
+- `list-bloated-btree-indexes`: Reports on bloated B-tree indexes.
 
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or would like to report a bug, please open an issue or submit a pull request.

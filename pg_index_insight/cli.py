@@ -109,7 +109,7 @@ def list_invalid_indexes():
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_inefficient_or_redundant_indexes(json):
+def list_unemployed_indexes(json):
     """
     Connects to the PostgreSQL database and identifies inefficient indexes, 
     which may include unused or invalid indexes that do not contribute to query 
@@ -130,14 +130,14 @@ def list_inefficient_or_redundant_indexes(json):
         database_query = DatabaseManager()
         indexResult = database_query.get_unused_and_invalid_indexes()
         database_name=os.getenv('DB_NAME')
-        if not len(indexResult)>0:
+        if not (len(indexResult)>0) and not(indexResult=='No results found'):
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["index_name"], item["category"]]
+            [item["database_name"], item["schema_name"],item["index_name"], item["category"]]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name", "Index Name", "Category"]
+        index_table_headers = ["Database Name","Schema Name", "Index Name", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
         index_result_table = tabulate(
@@ -252,7 +252,7 @@ def list_bloated_btree_indexes(json):
 @click.group()
 def main():
     """
-    The main entry point for the pg_index_purifier CLI Tool. 
+    The main entry point for the pgindexinsight CLI Tool. 
 
     This command line interface provides various utilities to analyze and 
     manage PostgreSQL indexes, helping users identify and eliminate 
@@ -262,7 +262,7 @@ def main():
     - list_unused_or_old_indexes: Lists indexes that are no longer in use.
     - list_invalid_indexes: Identifies indexes that are misconfigured or corrupted.
     - list_duplicate_indexes: Finds duplicate B-tree indexes.
-    - list_inefficient_or_redundant_indexes: Reports on indexes that are underperforming.
+    - list_unemployed_indexes: Reports on indexes that are underperforming.
     - list_bloated_btree_indexes: Detects indexes with excessive unused space.
 
     To use this tool, invoke it from the command line and specify a command.
@@ -272,7 +272,7 @@ def main():
 
 main.add_command(list_bloated_btree_indexes)
 main.add_command(list_duplicate_indexes)
-main.add_command(list_inefficient_or_redundant_indexes)
+main.add_command(list_unemployed_indexes)
 main.add_command(list_invalid_indexes)
 main.add_command(list_unused_or_old_indexes)
 
