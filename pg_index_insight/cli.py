@@ -130,14 +130,14 @@ def list_inefficient_or_redundant_indexes(json):
         database_query = DatabaseManager()
         indexResult = database_query.get_unused_and_invalid_indexes()
         database_name=os.getenv('DB_NAME')
-        if not len(indexResult)>0:
+        if not (len(indexResult)>0) and not(indexResult=='No results found'):
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["index_name"], item["category"]]
+            [item["database_name"], item["schema_name"],item["index_name"], item["category"]]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name", "Index Name", "Category"]
+        index_table_headers = ["Database Name","Schema Name", "Index Name", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
         index_result_table = tabulate(
@@ -252,7 +252,7 @@ def list_bloated_btree_indexes(json):
 @click.group()
 def main():
     """
-    The main entry point for the pg_index_purifier CLI Tool. 
+    The main entry point for the pgindexinsight CLI Tool. 
 
     This command line interface provides various utilities to analyze and 
     manage PostgreSQL indexes, helping users identify and eliminate 
