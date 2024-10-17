@@ -141,8 +141,9 @@ class DatabaseManager:
                     final_result.append(
                         {
                             "database_name": os.getenv("DB_NAME"),
+                            "schema_name": 'bok',
                             "index_name": row[2],
-                            "category": "Unused and Redundant Index",
+                            "category": "Unused&Redundant Index",
                         }
                     )
 
@@ -152,19 +153,9 @@ class DatabaseManager:
                     final_result.append(
                         {
                             "database_name": os.getenv("DB_NAME"),
+                            "schema_name": 'bok',
                             "index_name": row[2],
                             "category": "Invalid Index",
-                        }
-                    )
-
-                cur.execute(SqlQueries.find_exact_duplicate_index())
-                duplicates_result = cur.fetchall()
-                for row in duplicates_result:
-                    final_result.append(
-                        {
-                            "database_name": os.getenv("DB_NAME"),
-                            "index_name": row[0],
-                            "category": "Duplicate Index",
                         }
                     )
 
@@ -191,9 +182,9 @@ class DatabaseManager:
                         "database_name": index[0],
                         "index_name": index[3],
                         "bloat_ratio": float(format(index[9], ".1f")),
-                        "category": "High Bloated Index(Greater Then >60). Consider re-indexing",
+                        "category": "Bloated Index.",
                     }
-                    if indexModel.get("bloat_ratio") > 60:
+                    if indexModel.get("bloat_ratio") >= 0:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 
@@ -214,7 +205,7 @@ class DatabaseManager:
                     "database_name": os.getenv("DB_NAME"),
                     "index_name": index[0],
                     "duplicated_index_name": index[1],
-                    "category": "Duplicated Index.One of them can be removed.",
+                    "category": "Duplicated Index",
                 }
                 duplicated_index_list.append(duplicate_index_dict)
 
@@ -234,7 +225,7 @@ class DatabaseManager:
                     "schema_name": index[0],
                     "index_name": index[2],
                     "index_size": index[4],
-                    "category": "Invalid index. Please clean the index.",
+                    "category": "Invalid Index.",
                 }
                 invalid_index_list.append(invalid_index_dict)
 
@@ -256,7 +247,7 @@ class DatabaseManager:
                     "index_size": index[4],
                     "index_scan": index[3],
                     "last_scan": index[5],
-                    "category": "The index has not been scanned more than 1 year or unused",
+                    "category": "Unused/Retired Index",
                 }
                 old_index_list.append(old_index_dict)
         return old_index_list
