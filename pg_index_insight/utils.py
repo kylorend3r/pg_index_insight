@@ -23,3 +23,12 @@ def generate_index_report(data, report_name="Index Report",filename='index_repor
     with open(f'''{filename}.json''','w') as output_json:
         json.dump(report,output_json,indent=4)
         return True
+
+def generate_command(category,schema_name,index_name):
+    
+    if category=="Bloated":
+        execute_sql=f'''REINDEX INDEX CONCURRENTLY {schema_name}.{index_name};'''
+        return execute_sql
+    else:
+        execute_sql=f'''DROP INDEX CONCURRENTLY {schema_name}.{index_name};'''
+        return execute_sql

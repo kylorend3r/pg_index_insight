@@ -167,7 +167,7 @@ class DatabaseManager:
         finally:
             self.close()
 
-    def get_bloated_indexes(self):
+    def get_bloated_indexes(self,bloat_threshold):
         """Finds duplicate B-tree indexes in the database."""
         self._check_version_supported()
         try:
@@ -179,11 +179,12 @@ class DatabaseManager:
                 for index in bloated_indexes:
                     indexModel = {
                         "database_name": index[0],
+                        "schema_name": index[1],
                         "index_name": index[3],
                         "bloat_ratio": float(format(index[9], ".1f")),
-                        "category": "Bloated Index.",
+                        "category": "Bloated",
                     }
-                    if indexModel.get("bloat_ratio") > 60:
+                    if indexModel.get("bloat_ratio") > bloat_threshold:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 
