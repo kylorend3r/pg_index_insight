@@ -3,6 +3,7 @@ import os
 from tabulate import tabulate
 import time
 from .utils import generate_index_report
+from .utils import generate_command
 from .database import DatabaseManager as DatabaseManager
 
 @click.command()
@@ -109,7 +110,8 @@ def list_invalid_indexes():
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_unemployed_indexes(json):
+@click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
+def list_unemployed_indexes(json,dry_run):
     """
     Connects to the PostgreSQL database and identifies inefficient indexes, 
     which may include unused or invalid indexes that do not contribute to query 
@@ -150,6 +152,12 @@ def list_unemployed_indexes(json):
             if not jsonReport:
                 click.echo(f"Failed to export json")
         click.echo(index_result_table)
+        if dry_run:
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            for index in indexResult:
+                command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
+                click.echo(command_executed)
+            
         
     except Exception as e:
         click.echo(f"Error: {str(e)}")
@@ -202,7 +210,8 @@ def list_duplicate_indexes():
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_bloated_btree_indexes(json):
+@click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
+def list_bloated_btree_indexes(json,dry_run):
     """
     Connects to the PostgreSQL database and identifies bloated B-tree indexes. 
     Bloated indexes occur when the index structure has a significant amount of 
@@ -228,10 +237,10 @@ def list_bloated_btree_indexes(json):
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["index_name"], item["category"]]
+            [item["database_name"],item["schema_name"], item["index_name"], item["category"]]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name", "Index Name", "Category"]
+        index_table_headers = ["Database Name","Schema Name","Index Name", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_bloated_index_{report_time}'''
         index_result_table = tabulate(
@@ -244,7 +253,12 @@ def list_bloated_btree_indexes(json):
             if not jsonReport:
                 click.echo(f"Failed to export json")
         click.echo(index_result_table)
-        exit(0)
+
+        if dry_run:
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            for index in indexResult:
+                command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
+                click.echo(command_executed)
         
     except Exception as e:
         click.echo(f"Error: {str(e)}")

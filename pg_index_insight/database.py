@@ -179,11 +179,12 @@ class DatabaseManager:
                 for index in bloated_indexes:
                     indexModel = {
                         "database_name": index[0],
+                        "schema_name": index[1],
                         "index_name": index[3],
                         "bloat_ratio": float(format(index[9], ".1f")),
-                        "category": "Bloated Index.",
+                        "category": "Bloated",
                     }
-                    if indexModel.get("bloat_ratio") > 60:
+                    if indexModel.get("bloat_ratio") > 0:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 
