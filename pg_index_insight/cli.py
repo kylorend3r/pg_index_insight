@@ -59,7 +59,8 @@ def list_unused_or_old_indexes():
         click.echo(f"Error: {str(e)}")
 
 @click.command()
-def list_invalid_indexes():
+@click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
+def list_invalid_indexes(dry_run):
     """
     Connects to the PostgreSQL database and retrieves invalid indexes. 
     Invalid indexes typically refer to indexes that are misconfigured, 
@@ -103,6 +104,11 @@ def list_invalid_indexes():
                 table_formatted_index_result, index_table_headers, tablefmt="psql"
             )
             click.echo(index_result_table)
+            if dry_run:
+                click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
+                for index in invalid_indexes:
+                    command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
+                    click.echo(command_executed)
         
     except Exception as e:
         click.echo(f"Error: {str(e)}")
