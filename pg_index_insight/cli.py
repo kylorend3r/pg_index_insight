@@ -217,7 +217,8 @@ def list_duplicate_indexes():
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
-def list_bloated_btree_indexes(json,dry_run):
+@click.option('--bloat-threshold', type=int, default=50, help="Set the bloat threshold percentage for indexes.")
+def list_bloated_btree_indexes(json,dry_run,bloat_threshold):
     """
     Connects to the PostgreSQL database and identifies bloated B-tree indexes. 
     Bloated indexes occur when the index structure has a significant amount of 
@@ -237,7 +238,7 @@ def list_bloated_btree_indexes(json,dry_run):
     """
     try:
         databaseConnection = DatabaseManager()
-        indexResult = databaseConnection.get_bloated_indexes()
+        indexResult = databaseConnection.get_bloated_indexes(bloat_threshold)
         database_name=os.getenv('DB_NAME')
         if not len(indexResult)>0:
             click.echo(f'No bloated index found for database: {database_name}')
