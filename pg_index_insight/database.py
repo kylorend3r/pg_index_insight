@@ -184,7 +184,7 @@ class DatabaseManager:
                         "bloat_ratio": float(format(index[9], ".1f")),
                         "category": "Bloated",
                     }
-                    if indexModel.get("bloat_ratio") > 0:
+                    if indexModel.get("bloat_ratio") > 60:
                         bloatedIndexList.append(indexModel)
                 return bloatedIndexList
 
