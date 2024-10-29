@@ -137,14 +137,24 @@ def list_unemployed_indexes(json,dry_run):
     try:
         database_query = DatabaseManager()
         indexResult = database_query.get_unused_and_invalid_indexes()
+        duplicate_indexes_result=database_query.fetch_duplicate_unique_indexes() 
         database_name=os.getenv('DB_NAME')
-        if not (len(indexResult)>0) and not(indexResult=='No results found'):
+        if len(indexResult)==0 and len(duplicate_indexes_result)==0:
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
             [item["database_name"], item["schema_name"],item["index_name"], item["category"]]
             for item in indexResult
         ]
+        # append duplicate unique indexes
+        for unique_index in duplicate_indexes_result:
+            table_formatted_index_result.append([
+                database_name,
+                unique_index[0],
+                unique_index[2],
+                "Duplicate Unique Index"
+            ])
+
         index_table_headers = ["Database Name","Schema Name", "Index Name", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
@@ -162,6 +172,9 @@ def list_unemployed_indexes(json,dry_run):
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
             for index in indexResult:
                 command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
+                click.echo(command_executed)
+            for index in duplicate_indexes_result:
+                command_executed=generate_command(index[3],index[0],index[2])
                 click.echo(command_executed)
             
         
