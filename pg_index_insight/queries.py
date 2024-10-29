@@ -64,6 +64,7 @@ class SqlQueries:
         JOIN
             redundant_list r ON u.index_name = r.index_name;
         """
+
     @staticmethod
     def find_unused_indexes():
         """Returns a query to list all indexes."""
@@ -91,9 +92,10 @@ class SqlQueries:
             ORDER BY
                 idx_scan DESC;
         """
+
     @staticmethod
     def find_last_usage_older_than_one_year_indexes():
-        """ Returns a query to list all indexes which scanned over last year """
+        """Returns a query to list all indexes which scanned over last year"""
         return """
             SELECT
                 s.schemaname AS schema_name,
@@ -117,10 +119,9 @@ class SqlQueries:
             idx_scan DESC;
     """
 
-
     @staticmethod
     def find_invalid_indexes():
-        """ Returns a query to list all indexes which scanned over last year """
+        """Returns a query to list all indexes which scanned over last year"""
         return """
             SELECT
                 s.schemaname AS schema_name,
@@ -137,7 +138,7 @@ class SqlQueries:
             JOIN
                 pg_class AS t ON t.oid = idx.indrelid WHERE idx.indisvalid is FALSE;
     """
-    
+
     @staticmethod
     def calculate_btree_bloat():
         return """
@@ -249,10 +250,10 @@ FROM (
 ORDER BY nspname, tblname, idxname;
     
     """
-    
+
     @staticmethod
     def find_exact_duplicate_index():
-        """ Returns a query to list all indexes which scanned over last year """
+        """Returns a query to list all indexes which scanned over last year"""
         return """
             SELECT 
                    (array_agg(idx))[1] as index_name_1, 
@@ -265,4 +266,19 @@ ORDER BY nspname, tblname, idxname;
             GROUP BY key HAVING count(*)>1
             ORDER BY sum(pg_relation_size(idx)) DESC;
     """
-    
+
+    @staticmethod
+    def find_duplicate_constraints():
+        """Returns a list of unique indexes which are valid,ready and unique"""
+        return """
+            SELECT ix.schemaname, ix.tablename, ix.indexname, ix.indexdef 
+            FROM pg_stat_user_indexes co
+            INNER JOIN pg_indexes ix
+            ON co.indexrelname = ix.indexname
+            INNER JOIN pg_index i
+            ON co.indexrelid=i.indexrelid
+            WHERE i.indisunique = true
+            AND i.indisvalid=true
+            AND i.indisready=true
+            ORDER BY ix.tablename;
+    """
