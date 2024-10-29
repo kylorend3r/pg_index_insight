@@ -36,7 +36,7 @@ class DatabaseManager:
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
-    MIN_SUPPORTED_VERSION = 12
+    MIN_SUPPORTED_VERSION = 16
     SYSTEM_DATABASE_LIST = ['postgres','template0','template1']
     def __init__(self):
         self.connection = None
@@ -159,7 +159,7 @@ class DatabaseManager:
                         }
                     )
                 if len(final_result) == 0:
-                    return "No results found."
+                    return []
                 return final_result
 
         except Exception as e:
@@ -251,3 +251,26 @@ class DatabaseManager:
                 }
                 old_index_list.append(old_index_dict)
         return old_index_list
+
+    def fetch_duplicate_unique_indexes(self):
+        """Retrieves unique indexes have being duplicated"""
+        self._check_version_supported()
+        database_connection = self.connect()
+        current_indexes = set()
+        duplicate_unique_indexes = []
+        with database_connection.cursor() as database_cursor:
+            database_cursor.execute(SqlQueries.find_duplicate_constraints())
+            unique_indexes = database_cursor.fetchall()
+            for index in unique_indexes:
+                index_columns=str(index[3]).split(' ')[8]
+                schema_name=index[0]
+                table_name=index[1]
+                index_record=(schema_name,table_name,index_columns)
+                if index_record in current_indexes:
+                    # if index record has been found in current_indexes list append index to duplicate_unique_indexes list.
+                    duplicate_unique_indexes.append(index)
+                else:
+                    # if index record has not been found in current indexes add index_record to current_indexes list to 
+                    # compare later.
+                    current_indexes.add(index_record)
+        return duplicate_unique_indexes
