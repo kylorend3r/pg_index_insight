@@ -2,9 +2,9 @@ import click
 import os
 from tabulate import tabulate
 import time
-from .utils import generate_index_report
-from .utils import generate_command
-from .database import DatabaseManager as DatabaseManager
+from utils import generate_index_report
+from utils import generate_command
+from database import DatabaseManager as DatabaseManager
 
 @click.command()
 def list_unused_or_old_indexes():
@@ -137,9 +137,10 @@ def list_unemployed_indexes(json,dry_run):
     try:
         database_query = DatabaseManager()
         indexResult = database_query.get_unused_and_invalid_indexes()
-        duplicate_indexes_result=database_query.fetch_duplicate_unique_indexes() 
+        duplicate_unique_indexes_result=database_query.fetch_duplicate_unique_indexes() 
+        duplicate_btree_indexes_result=database_query.fetch_duplicate_indexes()
         database_name=os.getenv('DB_NAME')
-        if len(indexResult)==0 and len(duplicate_indexes_result)==0:
+        if len(indexResult)==0 and len(duplicate_unique_indexes_result)==0 and len(duplicate_btree_indexes_result)==0:
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
@@ -147,7 +148,7 @@ def list_unemployed_indexes(json,dry_run):
             for item in indexResult
         ]
         # append duplicate unique indexes
-        for unique_index in duplicate_indexes_result:
+        for unique_index in duplicate_unique_indexes_result:
             table_formatted_index_result.append([
                 database_name,
                 unique_index[0],
@@ -155,6 +156,14 @@ def list_unemployed_indexes(json,dry_run):
                 "Duplicate Unique Index"
             ])
 
+        # append duplicate btree indexes
+        for btree_index in duplicate_btree_indexes_result:
+            table_formatted_index_result.append([
+                database_name,
+                btree_index[0],
+                btree_index[2],
+                "Duplicate Btree Index"
+            ])
         index_table_headers = ["Database Name","Schema Name", "Index Name", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
@@ -173,59 +182,13 @@ def list_unemployed_indexes(json,dry_run):
             for index in indexResult:
                 command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                 click.echo(command_executed)
-            for index in duplicate_indexes_result:
+            for index in duplicate_unique_indexes_result:
                 command_executed=generate_command(index[3],index[0],index[2])
                 click.echo(command_executed)
             
         
     except Exception as e:
         click.echo(f"Error: {str(e)}")
-
-@click.command()
-def list_duplicate_indexes():
-    """
-    Connects to the PostgreSQL database and identifies duplicate B-tree indexes. 
-    Duplicate indexes can lead to unnecessary storage consumption and 
-    degraded performance, as they provide redundant functionality.
-
-    This function retrieves a list of such duplicate indexes and formats the 
-    results into a table displaying the database name, original index name, 
-    duplicate index name, and the category of the indexes. 
-
-    If no duplicate indexes are found, the function informs the user and exits.
-    """
-    try:
-        database_query = DatabaseManager()
-        duplicate_index_list = database_query.get_duplicate_btree_indexes()
-        database_name=os.getenv('DB_NAME')
-        if not len(duplicate_index_list)>0:
-            click.echo(f'No duplicate index found for database: {database_name}')
-            exit(0)
-       
-        table_formatted_index_result = [
-            [
-                item["database_name"],
-                item["index_name"],
-                item["duplicated_index_name"],
-                item["category"],
-            ]
-            for item in duplicate_index_list
-        ]
-        index_table_headers = [
-            "Database Name",
-            "Index Name",
-            "Duplicate Index Name",
-            "Category",
-        ]
-        index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
-        )
-        click.echo(index_result_table)
-        
-    except Exception as e:
-        click.echo(f"Error: {str(e)}")
-
-
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
@@ -305,7 +268,6 @@ def main():
 
 
 main.add_command(list_bloated_btree_indexes)
-main.add_command(list_duplicate_indexes)
 main.add_command(list_unemployed_indexes)
 main.add_command(list_invalid_indexes)
 main.add_command(list_unused_or_old_indexes)
