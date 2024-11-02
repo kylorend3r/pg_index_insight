@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from .queries import SqlQueries
+from queries import SqlQueries
 import logging
 
 class DatabaseManager:
@@ -22,7 +22,6 @@ class DatabaseManager:
         collect_facts(): Collects and stores facts about the database's state.
         get_unused_and_invalid_indexes(): Retrieves unused, invalid, and duplicate indexes.
         get_bloated_indexes(): Identifies bloated B-tree indexes in the database.
-        get_duplicate_btree_indexes(): Finds duplicate B-tree indexes in the database.
         fetch_invalid_indexes(): Identifies invalid indexes that require attention.
         fetch_unused_indexes(): Retrieves indexes that have not been used in a specified timeframe.
     """
@@ -193,24 +192,6 @@ class DatabaseManager:
         finally:
             self.close()
 
-    def get_duplicate_btree_indexes(self):
-        database_connection = self.connect()
-        self._check_version_supported()
-        with database_connection.cursor() as database_cursor:
-            database_cursor.execute(SqlQueries.find_exact_duplicate_index())
-            duplicate_indexes = database_cursor.fetchall()
-            duplicated_index_list = []
-            for index in duplicate_indexes:
-                duplicate_index_dict = {
-                    "database_name": os.getenv("DB_NAME"),
-                    "index_name": index[0],
-                    "duplicated_index_name": index[1],
-                    "category": "Duplicated Index",
-                }
-                duplicated_index_list.append(duplicate_index_dict)
-
-        return duplicated_index_list
-
     def fetch_invalid_indexes(self):
         """Identifies invalid indexes that may need to be cleaned or rebuilt."""
         self._check_version_supported()
@@ -263,6 +244,29 @@ class DatabaseManager:
             unique_indexes = database_cursor.fetchall()
             for index in unique_indexes:
                 index_columns=str(index[3]).split(' ')[8]
+                schema_name=index[0]
+                table_name=index[1]
+                index_record=(schema_name,table_name,index_columns)
+                if index_record in current_indexes:
+                    # if index record has been found in current_indexes list append index to duplicate_unique_indexes list.
+                    duplicate_unique_indexes.append(index)
+                else:
+                    # if index record has not been found in current indexes add index_record to current_indexes list to 
+                    # compare later.
+                    current_indexes.add(index_record)
+        return duplicate_unique_indexes
+
+    def fetch_duplicate_indexes(self):
+        """Retrieves unique indexes have being duplicated"""
+        self._check_version_supported()
+        database_connection = self.connect()
+        current_indexes = set()
+        duplicate_unique_indexes = []
+        with database_connection.cursor() as database_cursor:
+            database_cursor.execute(SqlQueries.find_duplicate_btrees())
+            unique_indexes = database_cursor.fetchall()
+            for index in unique_indexes:
+                index_columns=str(index[3]).split(' ')[7]
                 schema_name=index[0]
                 table_name=index[1]
                 index_record=(schema_name,table_name,index_columns)

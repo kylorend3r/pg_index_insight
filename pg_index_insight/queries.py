@@ -282,3 +282,20 @@ ORDER BY nspname, tblname, idxname;
             AND i.indisready=true
             ORDER BY ix.tablename;
     """
+    
+    @staticmethod
+    def find_duplicate_btrees():
+        """Returns a list of unique indexes which are valid,ready and unique"""
+        return """
+            SELECT ix.schemaname, ix.tablename, ix.indexname, ix.indexdef 
+            FROM pg_stat_user_indexes co
+            INNER JOIN pg_indexes ix
+            ON co.indexrelname = ix.indexname
+            INNER JOIN pg_index i
+            ON co.indexrelid=i.indexrelid
+            WHERE i.indisunique = false
+            AND i.indisvalid=true
+            AND i.indisready=true
+            ORDER BY ix.tablename;
+    """
+
