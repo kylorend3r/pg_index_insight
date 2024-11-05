@@ -31,7 +31,7 @@ pgindexinsight offers a simple yet powerful way to ensure that your PostgreSQL i
 # Requirements
 
 - Python 3.6 or higher
-- PostgreSQL 12 or higher
+- PostgreSQL 16 or higher
 - Required Python packages (listed in `requirements.txt`)
 
 # Installation
@@ -60,15 +60,9 @@ pip install -e .
 
 ```
 
-## Installation via Package Manager
-
-```bash
-pip3 install pg_index_insight
-```
 ## ⚠️ **Warning**
 
 **Please ensure that you are working with proper python virtual env! It is not an obligation but strongly suggested.**
-
 
 # Usage
 
@@ -83,7 +77,6 @@ pgindexinsight [command] [options]
 ```bash
 pgindexinsight list-unused-or-old-indexes
 pgindexinsight list-invalid-indexes
-pgindexinsight list-duplicate-indexes
 pgindexinsight list_unemployed_indexes
 pgindexinsight list-bloated-btree-indexes
 ```
@@ -92,9 +85,18 @@ pgindexinsight list-bloated-btree-indexes
 
 - `list-unused-or-old-indexes`: Lists unused or outdated indexes.
 - `list-invalid-indexes`: Identifies invalid indexes.
-- `list-duplicate-indexes`: Finds duplicate indexes.
+    - Options:
+        - --dry-run: Display actions without executing them.
 - `list-unemployed-indexes`: Lists unused indexes.
+    - Options:
+        - --dry-run: Display actions without executing them.
+        - --json: Export output to a JSON file.
+
 - `list-bloated-btree-indexes`: Reports on bloated B-tree indexes.
+    - Options:
+        - --dry-run: Display actions without executing them.
+        - --json: Export output to a JSON file.
+        - --bloat-threshold INTEGER: Set the bloat threshold percentage (default is 50%).
 
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or would like to report a bug, please open an issue or submit a pull request.

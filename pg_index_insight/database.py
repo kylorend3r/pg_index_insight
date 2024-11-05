@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from queries import SqlQueries
+from .queries import SqlQueries
 import logging
 
 class DatabaseManager:
@@ -67,7 +67,7 @@ class DatabaseManager:
                     user=user,
                     password=password,
                     connect_timeout=10,
-                    options="-c statement_timeout=5000 -c log_statement=all",
+                    options="-c statement_timeout=5000",
                     application_name="pgindexinsight",
                 )
                 self.connection.autocommit = True
@@ -86,7 +86,7 @@ class DatabaseManager:
                 if is_superuser == 'on':
                     DatabaseManager.logger.warning("Connected as a superuser.")
                 else:
-                    DatabaseManager.logger.warning("Connected as a regular user.")
+                    DatabaseManager.logger.info("Connected as a regular user.")
         except Exception as e:
             DatabaseManager.logger.error(f"Failed to check superuser status: {e}")
 
