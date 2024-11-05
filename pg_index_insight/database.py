@@ -142,6 +142,7 @@ class DatabaseManager:
                             "database_name": os.getenv("DB_NAME"),
                             "schema_name": row[0],
                             "index_name": row[2],
+                            "index_size": row[4],
                             "category": "Unused&Redundant Index",
                         }
                     )
@@ -154,6 +155,7 @@ class DatabaseManager:
                             "database_name": os.getenv("DB_NAME"),
                             "schema_name": row[0],
                             "index_name": row[2],
+                            "index_size": row[4],
                             "category": "Invalid Index",
                         }
                     )
