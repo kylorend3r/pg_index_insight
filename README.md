@@ -64,9 +64,6 @@ pip install -e .
 
 **Please ensure that you are working with proper python virtual env! It is not an obligation but strongly suggested.**
 
-
-
-
 ## Configure PostgreSQL User
 
 pgindexinsight requires a user which can connect to the database that will be scanned. Therefore, the following example reveals the minimum privileges. Before executing pgindexinsight please ensure that the user has enough privileges.In addition to this please confirm pg_hba.conf allows the connection.
@@ -81,6 +78,17 @@ GRANT SELECT ON TABLE pg_stats TO pg_index_insight_user;
 GRANT SELECT ON TABLE pg_indexes TO pg_index_insight_user;
 ```
 
+## Configure Environment Variables
+
+Before using this tool, you need to configure some environment variables. These variables are essential for connecting to your PostgreSQL database. Set them by running the following commands in your terminal:
+
+```bash
+export DB_HOST="localhost"
+export DB_PORT="5432"
+export DB_NAME="your_db_name"
+export DB_USER="your_user"
+export DB_PASSWORD="your_pass"
+```
 
 # Usage
 
