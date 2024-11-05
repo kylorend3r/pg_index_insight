@@ -132,7 +132,3 @@ git commit -m 'Add some feature'
 git push origin feature/YourFeatureName
 ```
 5. Open a pull request.
-
-
-
-
