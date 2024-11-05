@@ -170,7 +170,6 @@ def list_unemployed_indexes(json,dry_run):
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
         sorted_desc_index_list = sorted(table_formatted_index_result, key=lambda x: x[3],reverse=True)
-        print(sorted_desc_index_list)
         index_result_table = tabulate(
             sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
