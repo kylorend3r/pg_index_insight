@@ -98,6 +98,23 @@ pgindexinsight list-bloated-btree-indexes
         - --json: Export output to a JSON file.
         - --bloat-threshold INTEGER: Set the bloat threshold percentage (default is 50%).
 
+Example Output for `list-unemployed-indexes`
+
+```bash
++-----------------+---------------+--------------------------+------------------------+
+| Database Name   | Schema Name   | Index Name               | Category               |
+|-----------------+---------------+--------------------------+------------------------|
+| benchmark_v1    | public        | idx_test_data            | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v7              | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v6              | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v5              | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_data            | Invalid Index          |
+| benchmark_v1    | public        | pgbench_accounts_pkey_v2 | Duplicate Unique Index |
+| benchmark_v1    | public        | idx_test_v7              | Duplicate Btree Index  |
+| benchmark_v1    | public        | idx_test_v5              | Duplicate Btree Index  |
++-----------------+---------------+--------------------------+------------------------+
+```
+
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or would like to report a bug, please open an issue or submit a pull request.
 
