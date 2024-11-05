@@ -142,7 +142,6 @@ class SqlQueries:
     @staticmethod
     def calculate_btree_bloat():
         return """
-    
     SELECT current_database(), 
        nspname AS schemaname, 
        tblname, 
@@ -248,7 +247,6 @@ FROM (
     ) AS rows_hdr_pdg_stats
 ) AS relation_stats
 ORDER BY nspname, tblname, idxname;
-    
     """
 
     @staticmethod
