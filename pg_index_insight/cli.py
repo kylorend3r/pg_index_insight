@@ -2,9 +2,9 @@ import click
 import os
 from tabulate import tabulate
 import time
-from utils import generate_index_report
-from utils import generate_command
-from database import DatabaseManager as DatabaseManager
+from .utils import generate_index_report
+from .utils import generate_command
+from .database import DatabaseManager as DatabaseManager
 
 @click.command()
 def list_unused_or_old_indexes():
