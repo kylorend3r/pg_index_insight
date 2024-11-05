@@ -64,9 +64,25 @@ pip install -e .
 
 **Please ensure that you are working with proper python virtual env! It is not an obligation but strongly suggested.**
 
-# Usage
 
-## Installation
+
+
+## Configure PostgreSQL User
+
+pgindexinsight requires a user which can connect to the database that will be scanned. Therefore, the following example reveals the minimum privileges. Before executing pgindexinsight please ensure that the user has enough privileges.In addition to this please confirm pg_hba.conf allows the connection.
+
+```sql
+GRANT SELECT ON TABLE pg_stat_user_indexes TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_index TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_class TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_namespace TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_attribute TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_stats TO pg_index_insight_user;
+GRANT SELECT ON TABLE pg_indexes TO pg_index_insight_user;
+```
+
+
+# Usage
 
 ```bash
 pgindexinsight [command] [options]
@@ -101,18 +117,19 @@ pgindexinsight list-bloated-btree-indexes
 Example Output for `list-unemployed-indexes`
 
 ```bash
-+-----------------+---------------+--------------------------+------------------------+
-| Database Name   | Schema Name   | Index Name               | Category               |
-|-----------------+---------------+--------------------------+------------------------|
-| benchmark_v1    | public        | idx_test_data            | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v7              | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v6              | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v5              | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_data            | Invalid Index          |
-| benchmark_v1    | public        | pgbench_accounts_pkey_v2 | Duplicate Unique Index |
-| benchmark_v1    | public        | idx_test_v7              | Duplicate Btree Index  |
-| benchmark_v1    | public        | idx_test_v5              | Duplicate Btree Index  |
-+-----------------+---------------+--------------------------+------------------------+
++-----------------+---------------+-------------------------------+--------------+------------------------+
+| Database Name   | Schema Name   | Index Name                    | Index Size   | Category               |
+|-----------------+---------------+-------------------------------+--------------+------------------------|
+| benchmark_v1    | public        | idx_test_v7                   | 545 MB       | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v6                   | 545 MB       | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v5                   | 545 MB       | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_v6                   | 545 MB       | Duplicate Btree Index  |
+| benchmark_v1    | public        | idx_test_v5                   | 545 MB       | Duplicate Btree Index  |
+| benchmark_v1    | sales         | orders_2023_q2_order_date_idx | 16 kB        | Unused&Redundant Index |
+| benchmark_v1    | public        | pgbench_accounts_pkey_v2      | 1285 MB      | Duplicate Unique Index |
+| benchmark_v1    | public        | idx_test_data                 | 0 bytes      | Unused&Redundant Index |
+| benchmark_v1    | public        | idx_test_data                 | 0 bytes      | Invalid Index          |
++-----------------+---------------+-------------------------------+--------------+------------------------+
 ```
 
 ## Contributing
