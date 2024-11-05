@@ -144,7 +144,7 @@ def list_unemployed_indexes(json,dry_run):
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["schema_name"],item["index_name"], item["category"]]
+            [item["database_name"], item["schema_name"],item["index_name"],item["index_size"], item["category"]]
             for item in indexResult
         ]
         # append duplicate unique indexes
@@ -153,6 +153,7 @@ def list_unemployed_indexes(json,dry_run):
                 database_name,
                 unique_index[0],
                 unique_index[2],
+                unique_index[4],
                 "Duplicate Unique Index"
             ])
 
@@ -162,17 +163,20 @@ def list_unemployed_indexes(json,dry_run):
                 database_name,
                 btree_index[0],
                 btree_index[2],
+                btree_index[4],
                 "Duplicate Btree Index"
             ])
-        index_table_headers = ["Database Name","Schema Name", "Index Name", "Category"]
+        index_table_headers = ["Database Name","Schema Name", "Index Name","Index Size", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
+        sorted_desc_index_list = sorted(table_formatted_index_result, key=lambda x: x[3],reverse=True)
+        print(sorted_desc_index_list)
         index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
+            sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
         if json:
             jsonReport = generate_index_report(
-                table_formatted_index_result, filename=json_report_name
+                sorted_desc_index_list, filename=json_report_name
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
