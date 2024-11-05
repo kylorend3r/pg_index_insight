@@ -220,10 +220,10 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold):
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"],item["schema_name"], item["index_name"], item["category"]]
+            [item["database_name"],item["schema_name"], item["index_name"],item["bloat_ratio"],item["category"]]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name","Schema Name","Index Name", "Category"]
+        index_table_headers = ["Database Name","Schema Name","Index Name","Bloat Ratio", "Category"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_bloated_index_{report_time}'''
         index_result_table = tabulate(
