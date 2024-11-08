@@ -7,7 +7,8 @@ from .utils import generate_command
 from .database import DatabaseManager as DatabaseManager
 
 @click.command()
-def list_unused_or_old_indexes():
+@click.option("--json", is_flag=True, help="Export output to JSON file.")
+def list_unused_or_old_indexes(json):
     """
     Connects to the PostgreSQL database and retrieves unused or redundant indexes. 
     This function queries the database for indexes that are not frequently scanned 
@@ -23,6 +24,8 @@ def list_unused_or_old_indexes():
         database_instance = DatabaseManager()
         duplicate_index_list = database_instance.fetch_unused_indexes()
         database_name=os.getenv('DB_NAME')
+        report_time = str.replace(str(time.time()), ".", "_")
+        json_report_name=f'''{database_name}_unused_old_index_{report_time}'''
         if not len(duplicate_index_list)>0:
             click.echo(f'No unused or old index found for database: {database_name}')
             exit(0)
@@ -54,13 +57,20 @@ def list_unused_or_old_indexes():
         index_result_table = tabulate(
             table_formatted_index_result, index_table_headers, tablefmt="psql"
         )
+        if json:
+            jsonReport = generate_index_report(
+                table_formatted_index_result, filename=json_report_name
+            )
+            if not jsonReport:
+                click.echo(f"Failed to export json")
         click.echo(index_result_table)
     except Exception as e:
         click.echo(f"Error: {str(e)}")
 
 @click.command()
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
-def list_invalid_indexes(dry_run):
+@click.option("--json", is_flag=True, help="Export output to JSON file.")
+def list_invalid_indexes(dry_run,json):
     """
     Connects to the PostgreSQL database and retrieves invalid indexes. 
     Invalid indexes typically refer to indexes that are misconfigured, 
@@ -77,6 +87,8 @@ def list_invalid_indexes(dry_run):
         database_query=DatabaseManager()
         invalid_indexes=database_query.fetch_invalid_indexes()
         database_name=os.getenv('DB_NAME')
+        report_time = str.replace(str(time.time()), ".", "_")
+        json_report_name=f'''{database_name}_invalid_index_{report_time}'''
         if not len(invalid_indexes)>0:
             click.echo(f'No invalid index found for database: {database_name}')
             exit(0)
@@ -104,6 +116,12 @@ def list_invalid_indexes(dry_run):
                 table_formatted_index_result, index_table_headers, tablefmt="psql"
             )
             click.echo(index_result_table)
+            if json:
+                jsonReport = generate_index_report(
+                    table_formatted_index_result, filename=json_report_name
+            )
+            if not jsonReport:
+                click.echo(f"Failed to export json")
             if dry_run:
                 click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
                 for index in invalid_indexes:

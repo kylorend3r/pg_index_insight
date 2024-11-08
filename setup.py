@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pg_index_insight',
-    version='v1.0.0',
+    version='v1.3.0',
     author='Huseyin Demir',
     author_email='huseyin.d3r@gmail.com',
     description='A CLI tool for analyzing PostgreSQL index efficiency',
@@ -14,7 +14,7 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'click', 
-        'psycopg2',
+        'psycopg2==2.9.9',
         'tabulate'
     ],
     entry_points={
