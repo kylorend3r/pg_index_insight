@@ -35,9 +35,9 @@ def list_unused_or_old_indexes(json):
                 item["schema_name"],
                 item["index_name"],
                 item["index_size"],
+                item["category"],                
                 item["index_scan"],
                 item["last_scan"],
-                item["category"],
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
             ]
@@ -57,21 +57,22 @@ def list_unused_or_old_indexes(json):
         index_result_table = tabulate(
             table_formatted_index_result, index_table_headers, tablefmt="psql"
         )
+        click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
                 table_formatted_index_result, filename=json_report_name
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
-        click.echo(index_result_table)
     except Exception as e:
         click.echo(f"Error: {str(e)}")
 
 @click.command()
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_invalid_indexes(dry_run,json):
-    """
+@click.option("--drop-force", is_flag=True, help="Drop all invalid indexes. User must be the owner or have superuser privileges.")
+def list_invalid_indexes(dry_run,json,drop_force): 
+    """ 
     Connects to the PostgreSQL database and retrieves invalid indexes. 
     Invalid indexes typically refer to indexes that are misconfigured, 
     corrupted, or otherwise ineffective in optimizing queries.
@@ -115,21 +116,31 @@ def list_invalid_indexes(dry_run,json):
             index_result_table = tabulate(
                 table_formatted_index_result, index_table_headers, tablefmt="psql"
             )
-            click.echo(index_result_table)
+            click.echo(index_result_table)      
             if json:
                 jsonReport = generate_index_report(
                     table_formatted_index_result, filename=json_report_name
-            )
-            if not jsonReport:
-                click.echo(f"Failed to export json")
+             )
+                if not jsonReport:
+                    click.echo(f"Failed to export json")   
             if dry_run:
                 click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
                 for index in invalid_indexes:
                     command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                     click.echo(command_executed)
-        
+            if drop_force:
+                click.echo(f'''Following queries are running on database: {database_name}.''')
+                commands_for_execute = []
+                for index in invalid_indexes:
+                    commands_for_execute.append(generate_command(index['category'], index['schema_name'], index['index_name']))
+                click.echo('\n'.join(commands_for_execute))
+                try:
+                    database_query.run_query(commands_for_execute)
+                except Exception as e:
+                    click.echo(f"Error: {str(e)}")
     except Exception as e:
         click.echo(f"Error: {str(e)}")
+
 
 
 @click.command()
@@ -191,13 +202,13 @@ def list_unemployed_indexes(json,dry_run):
         index_result_table = tabulate(
             sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
+        click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
-                sorted_desc_index_list, filename=json_report_name
+                table_formatted_index_result, filename=json_report_name
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
-        click.echo(index_result_table)
         if dry_run:
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
             for index in indexResult:
@@ -206,8 +217,6 @@ def list_unemployed_indexes(json,dry_run):
             for index in duplicate_unique_indexes_result:
                 command_executed=generate_command(index[3],index[0],index[2])
                 click.echo(command_executed)
-            
-        
     except Exception as e:
         click.echo(f"Error: {str(e)}")
 
@@ -250,13 +259,13 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold):
         index_result_table = tabulate(
             table_formatted_index_result, index_table_headers, tablefmt="psql"
         )
+        click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
                 table_formatted_index_result, filename=json_report_name
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
-        click.echo(index_result_table)
 
         if dry_run:
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
