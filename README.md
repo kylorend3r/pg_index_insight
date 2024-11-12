@@ -111,6 +111,8 @@ pgindexinsight list-bloated-btree-indexes
 - `list-invalid-indexes`: Identifies invalid indexes.
     - Options:
         - --dry-run: Display actions without executing them.
+        - --json: Export output to a JSON file.
+        - --drop-force: Drop invalid indexes. (User must be the owner or have superuser privileges.)
 - `list-unemployed-indexes`: Lists unused indexes.
     - Options:
         - --dry-run: Display actions without executing them.
