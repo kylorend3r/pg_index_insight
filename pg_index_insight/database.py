@@ -90,6 +90,16 @@ class DatabaseManager:
         except Exception as e:
             DatabaseManager.logger.error(f"Failed to check superuser status: {e}")
 
+    def run_query(self,queries):
+        """Run query against Postgresql database. It takes list of queries."""
+        database_connection = self.connect()
+        with database_connection.cursor() as db_cursor:
+            for query in queries:
+                try:
+                    db_cursor.execute(query)       
+                except Exception as e:
+                    print(f"Error: {str(e)}")        
+        self.close()
 
     def close(self):
         """Closes the database connection."""
@@ -133,7 +143,6 @@ class DatabaseManager:
 
             with conn.cursor() as cur:
                 final_result = []
-
                 cur.execute(SqlQueries.find_unused_redundant_indexes())
                 unused_redundant_result = cur.fetchall()
                 for row in unused_redundant_result:
