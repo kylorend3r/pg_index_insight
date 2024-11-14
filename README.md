@@ -108,20 +108,25 @@ pgindexinsight list-bloated-btree-indexes
 ### Available Commands
 
 - `list-unused-or-old-indexes`: Lists unused or outdated indexes.
+        - --json: Export output to a JSON file.
+        - --output-path: JSON file output directory.
 - `list-invalid-indexes`: Identifies invalid indexes.
     - Options:
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
+        - --output-path: JSON file output directory.
         - --drop-force: Drop invalid indexes. (User must be the owner or have superuser privileges.)
 - `list-unemployed-indexes`: Lists unused indexes.
     - Options:
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
+        - --output-path: JSON file output directory.
 
 - `list-bloated-btree-indexes`: Reports on bloated B-tree indexes.
     - Options:
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
+        - --output-path: JSON file output directory.
         - --bloat-threshold INTEGER: Set the bloat threshold percentage (default is 50%).
 
 Example Output for `list-unemployed-indexes`
