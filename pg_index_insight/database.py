@@ -178,7 +178,7 @@ class DatabaseManager:
             self.close()
 
     def get_bloated_indexes(self,bloat_threshold):
-        """Finds duplicate B-tree indexes in the database."""
+        """Returns indxes which have bloat ratio is greater than bloat_threshold."""
         self._check_version_supported()
         try:
             conn = self.connect()
@@ -268,7 +268,7 @@ class DatabaseManager:
         return duplicate_unique_indexes
 
     def fetch_duplicate_indexes(self):
-        """Retrieves unique indexes have being duplicated"""
+        """Retrieves btree indexes have being duplicated"""
         self._check_version_supported()
         database_connection = self.connect()
         current_indexes = set()
