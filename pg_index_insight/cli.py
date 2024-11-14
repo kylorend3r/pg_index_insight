@@ -8,7 +8,8 @@ from .database import DatabaseManager as DatabaseManager
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
-def list_unused_or_old_indexes(json):
+@click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
+def list_unused_or_old_indexes(json,output_path):
     """
     Connects to the PostgreSQL database and retrieves unused or redundant indexes. 
     This function queries the database for indexes that are not frequently scanned 
@@ -60,7 +61,7 @@ def list_unused_or_old_indexes(json):
         click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
-                table_formatted_index_result, filename=json_report_name
+                table_formatted_index_result, filename=json_report_name,report_path=output_path
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
@@ -70,8 +71,9 @@ def list_unused_or_old_indexes(json):
 @click.command()
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
+@click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
 @click.option("--drop-force", is_flag=True, help="Drop all invalid indexes. User must be the owner or have superuser privileges.")
-def list_invalid_indexes(dry_run,json,drop_force): 
+def list_invalid_indexes(dry_run,json,drop_force,output_path): 
     """ 
     Connects to the PostgreSQL database and retrieves invalid indexes. 
     Invalid indexes typically refer to indexes that are misconfigured, 
@@ -119,7 +121,7 @@ def list_invalid_indexes(dry_run,json,drop_force):
             click.echo(index_result_table)      
             if json:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name
+                    table_formatted_index_result, filename=json_report_name,report_path=output_path
              )
                 if not jsonReport:
                     click.echo(f"Failed to export json")   
@@ -145,8 +147,9 @@ def list_invalid_indexes(dry_run,json,drop_force):
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
+@click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
-def list_unemployed_indexes(json,dry_run):
+def list_unemployed_indexes(json,dry_run,output_path):
     """
     Connects to the PostgreSQL database and identifies inefficient indexes, 
     which may include unused or invalid indexes that do not contribute to query 
@@ -205,7 +208,7 @@ def list_unemployed_indexes(json,dry_run):
         click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
-                table_formatted_index_result, filename=json_report_name
+                table_formatted_index_result, filename=json_report_name,report_path=output_path
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
@@ -222,9 +225,10 @@ def list_unemployed_indexes(json,dry_run):
 
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
+@click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
 @click.option('--bloat-threshold', type=int, default=50, help="Set the bloat threshold percentage for indexes.")
-def list_bloated_btree_indexes(json,dry_run,bloat_threshold):
+def list_bloated_btree_indexes(json,dry_run,bloat_threshold,output_path):
     """
     Connects to the PostgreSQL database and identifies bloated B-tree indexes. 
     Bloated indexes occur when the index structure has a significant amount of 
@@ -262,7 +266,7 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold):
         click.echo(index_result_table)
         if json:
             jsonReport = generate_index_report(
-                table_formatted_index_result, filename=json_report_name
+                table_formatted_index_result, filename=json_report_name,report_path=output_path
             )
             if not jsonReport:
                 click.echo(f"Failed to export json")
