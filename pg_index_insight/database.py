@@ -55,7 +55,6 @@ class DatabaseManager:
                 dbname = os.getenv("DB_NAME")
                 user = os.getenv("DB_USER")
                 password = os.getenv("DB_PASSWORD")
-
                 if not all([dbname, user, password]):
                     raise ValueError(
                         "Missing one or more required environment variables: DB_NAME, DB_USER, DB_PASSWORD"
@@ -67,7 +66,7 @@ class DatabaseManager:
                     user=user,
                     password=password,
                     connect_timeout=10,
-                    options="-c statement_timeout=5000",
+                    options="-c statement_timeout=600s -c lock_timeout=5s -c log_statement=all",
                     application_name="pgindexinsight",
                 )
                 self.connection.autocommit = True
