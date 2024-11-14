@@ -211,11 +211,8 @@ def list_unemployed_indexes(json,dry_run):
                 click.echo(f"Failed to export json")
         if dry_run:
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
-            for index in indexResult:
-                command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
-                click.echo(command_executed)
-            for index in duplicate_unique_indexes_result:
-                command_executed=generate_command(index[3],index[0],index[2])
+            for index in sorted_desc_index_list:
+                command_executed=generate_command(index[0],index[1],index[2])
                 click.echo(command_executed)
     except Exception as e:
         click.echo(f"Error: {str(e)}")

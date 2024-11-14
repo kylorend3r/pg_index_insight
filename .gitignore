@@ -13,3 +13,4 @@ test_env/
 build/
 dist/
 index_efficiency*
+schema.sql
