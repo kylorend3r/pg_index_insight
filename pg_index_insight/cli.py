@@ -131,8 +131,6 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                 for index in invalid_indexes:
                     command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                     click.echo(command_executed)
-            print("--------------")
-            print(drop_force)
             if drop_force:
                 click.echo(f'''Following queries are running on database: {database_name}.''')
                 commands_for_execute = []
