@@ -108,6 +108,7 @@ pgindexinsight list-bloated-btree-indexes
 ### Available Commands
 
 - `list-unused-or-old-indexes`: Lists unused or outdated indexes.
+    - Options:
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
 - `list-invalid-indexes`: Identifies invalid indexes.
