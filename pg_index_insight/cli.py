@@ -127,6 +127,7 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                     click.echo(f"Failed to export json")   
             if dry_run:
                 click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
+                drop_force=False
                 for index in invalid_indexes:
                     command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                     click.echo(command_executed)

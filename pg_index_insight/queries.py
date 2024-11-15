@@ -67,7 +67,7 @@ class SqlQueries:
 
     @staticmethod
     def find_unused_indexes():
-        """Returns a query to list all indexes."""
+        """Returns indexes that never scanned and are not pk or constraint."""
         return """
             SELECT
                 s.schemaname AS schema_name,
@@ -92,32 +92,6 @@ class SqlQueries:
             ORDER BY
                 idx_scan DESC;
         """
-
-    @staticmethod
-    def find_last_usage_older_than_one_year_indexes():
-        """Returns a query to list all indexes which scanned over last year"""
-        return """
-            SELECT
-                s.schemaname AS schema_name,
-                t.relname AS table_name,
-                i.relname AS index_name,
-                idx_scan AS index_scans,
-                pg_size_pretty(pg_relation_size(i.oid)) AS index_size
-        FROM
-            pg_stat_user_indexes AS s
-        JOIN
-            pg_index AS idx ON s.indexrelid = idx.indexrelid
-        JOIN
-            pg_class AS i ON i.oid = s.indexrelid
-        JOIN
-            pg_class AS t ON t.oid = idx.indrelid
-        WHERE
-            (last_idx_scan IS NULL OR last_idx_scan < NOW() - INTERVAL '1 year')
-            AND NOT idx.indisprimary
-            AND NOT idx.indisunique
-        ORDER BY
-            idx_scan DESC;
-    """
 
     @staticmethod
     def find_invalid_indexes():
@@ -249,21 +223,6 @@ FROM (
 ORDER BY nspname, tblname, idxname;
     """
 
-    @staticmethod
-    def find_exact_duplicate_index():
-        """Returns a query to list all indexes which scanned over last year"""
-        return """
-            SELECT 
-                   (array_agg(idx))[1] as index_name_1, 
-                   (array_agg(idx))[2] as index_name_2,
-                   pg_size_pretty(sum(pg_relation_size(idx))::bigint) as size
-            FROM (
-                SELECT indexrelid::regclass as idx, (indrelid::text ||E'\n'|| indclass::text ||E'\n'|| indkey::text ||E'\n'||
-                                                     coalesce(indexprs::text,'')||E'\n' || coalesce(indpred::text,'')) as key
-                FROM pg_index) sub
-            GROUP BY key HAVING count(*)>1
-            ORDER BY sum(pg_relation_size(idx)) DESC;
-    """
 
     @staticmethod
     def find_duplicate_constraints():
