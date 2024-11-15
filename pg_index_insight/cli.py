@@ -60,11 +60,12 @@ def list_unused_or_old_indexes(json,output_path):
         )
         click.echo(index_result_table)
         if json:
-            jsonReport = generate_index_report(
+            try:
+                jsonReport = generate_index_report(
                 table_formatted_index_result, filename=json_report_name,report_path=output_path
             )
-            if not jsonReport:
-                click.echo(f"Failed to export json")
+            except Exception as e:
+                click.echo(f"Failed to export json, error: {str(e)} ")
     except Exception as e:
         click.echo(f"Error: {str(e)}")
 
@@ -120,11 +121,12 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
             )
             click.echo(index_result_table)      
             if json:
-                jsonReport = generate_index_report(
+                try:
+                    jsonReport = generate_index_report(
                     table_formatted_index_result, filename=json_report_name,report_path=output_path
-             )
-                if not jsonReport:
-                    click.echo(f"Failed to export json")   
+                )
+                except Exception as e:
+                    click.echo(f"Failed to export json, error: {str(e)} ")  
             if dry_run:
                 click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
                 drop_force=False
@@ -208,11 +210,12 @@ def list_unemployed_indexes(json,dry_run,output_path):
         )
         click.echo(index_result_table)
         if json:
-            jsonReport = generate_index_report(
+            try:
+                jsonReport = generate_index_report(
                 table_formatted_index_result, filename=json_report_name,report_path=output_path
             )
-            if not jsonReport:
-                click.echo(f"Failed to export json")
+            except Exception as e:
+                click.echo(f"Failed to export json, error: {str(e)} ")
         if dry_run:
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
             for index in sorted_desc_index_list:
@@ -263,11 +266,12 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold,output_path):
         )
         click.echo(index_result_table)
         if json:
-            jsonReport = generate_index_report(
-                table_formatted_index_result, filename=json_report_name,report_path=output_path
-            )
-            if not jsonReport:
-                click.echo(f"Failed to export json")
+            try:
+                jsonReport = generate_index_report(
+                    table_formatted_index_result, filename=json_report_name,report_path=output_path
+                )
+            except:
+                click.echo(f"Failed to export json, Error: {str(e)} ")
 
         if dry_run:
             click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
