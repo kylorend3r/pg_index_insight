@@ -67,7 +67,7 @@ class SqlQueries:
 
     @staticmethod
     def find_unused_indexes():
-        """Returns a query to list all indexes."""
+        """Returns indexes that never scanned and are not pk or constraint."""
         return """
             SELECT
                 s.schemaname AS schema_name,
