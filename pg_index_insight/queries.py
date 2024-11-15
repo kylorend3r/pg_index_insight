@@ -94,32 +94,6 @@ class SqlQueries:
         """
 
     @staticmethod
-    def find_last_usage_older_than_one_year_indexes():
-        """Returns a query to list all indexes which scanned over last year"""
-        return """
-            SELECT
-                s.schemaname AS schema_name,
-                t.relname AS table_name,
-                i.relname AS index_name,
-                idx_scan AS index_scans,
-                pg_size_pretty(pg_relation_size(i.oid)) AS index_size
-        FROM
-            pg_stat_user_indexes AS s
-        JOIN
-            pg_index AS idx ON s.indexrelid = idx.indexrelid
-        JOIN
-            pg_class AS i ON i.oid = s.indexrelid
-        JOIN
-            pg_class AS t ON t.oid = idx.indrelid
-        WHERE
-            (last_idx_scan IS NULL OR last_idx_scan < NOW() - INTERVAL '1 year')
-            AND NOT idx.indisprimary
-            AND NOT idx.indisunique
-        ORDER BY
-            idx_scan DESC;
-    """
-
-    @staticmethod
     def find_invalid_indexes():
         """Returns a query to list all indexes which scanned over last year"""
         return """
