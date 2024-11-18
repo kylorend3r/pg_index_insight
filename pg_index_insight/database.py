@@ -19,6 +19,7 @@ class DatabaseManager:
     Methods:
         connect(): Establishes a database connection using environment variables.
         close(): Closes the database connection.
+        run_query(): Executes a list of SQL queries on the connected PostgreSQL database.
         collect_facts(): Collects and stores facts about the database's state.
         get_unused_and_invalid_indexes(): Retrieves unused, invalid, and duplicate indexes.
         get_bloated_indexes(): Identifies bloated B-tree indexes in the database.
