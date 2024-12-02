@@ -37,7 +37,6 @@ def list_unused_or_old_indexes(json,output_path):
                 item["index_name"],
                 item["index_size"],
                 item["index_scan"],
-                item["last_scan"],
                 item["category"],
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
@@ -50,7 +49,6 @@ def list_unused_or_old_indexes(json,output_path):
             "Index Name",
             "Index Size",
             "Index Scan Count",
-            "Last Scan Date",
             "Category",
             "Replica Node Exists",
             "Database Recovery Mode"
@@ -128,7 +126,7 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                 except Exception as e:
                     click.echo(f"Failed to export json, error: {str(e)} ")  
             if dry_run:
-                click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
+                click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the following commands wisely.''')
                 drop_force=False
                 for index in invalid_indexes:
                     command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
@@ -217,7 +215,7 @@ def list_unemployed_indexes(json,dry_run,output_path):
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
         if dry_run:
-            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
             for index in sorted_desc_index_list:
                 command_executed=generate_command(index[0],index[1],index[2])
                 click.echo(command_executed)
@@ -274,7 +272,7 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold,output_path):
                 click.echo(f"Failed to export json, Error: {str(e)} ")
 
         if dry_run:
-            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
             for index in indexResult:
                 command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                 click.echo(command_executed)
