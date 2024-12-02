@@ -48,8 +48,8 @@ def list_unused_indexes(json,output_path):
             "Index Name",
             "Index Size",
             "Category",
-            "Replica Node Exists",
-            "Database Recovery Mode"
+            "Physical Replication Exists",
+            "Database Recovery Enabled"
         ]
         index_result_table = tabulate(
             table_formatted_index_result, index_table_headers, tablefmt="psql"
