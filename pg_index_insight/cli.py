@@ -9,7 +9,7 @@ from .database import DatabaseManager as DatabaseManager
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
-def list_unused_or_old_indexes(json,output_path):
+def list_unused_indexes(json,output_path):
     """
     Connects to the PostgreSQL database and retrieves unused or redundant indexes. 
     This function queries the database for indexes that are not frequently scanned 
@@ -304,7 +304,7 @@ def main():
 main.add_command(list_bloated_btree_indexes)
 main.add_command(list_unemployed_indexes)
 main.add_command(list_invalid_indexes)
-main.add_command(list_unused_or_old_indexes)
+main.add_command(list_unused_indexes)
 
 if __name__ == '__main__':
     main()
