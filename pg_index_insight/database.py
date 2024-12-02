@@ -1,5 +1,6 @@
 import os
 import psycopg2
+import re
 from .queries import SqlQueries
 import logging
 
@@ -96,11 +97,20 @@ class DatabaseManager:
         with database_connection.cursor() as db_cursor:
             for query in queries:
                 try:
-                    db_cursor.execute(query)       
+                    pattern = r"^(DROP INDEX CONCURRENTLY|REINDEX INDEX CONCURRENTLY)\b"
+                    is_query_valid=bool(re.match(pattern, query.strip(), re.IGNORECASE))
+                    if not is_query_valid:
+                        DatabaseManager.logger.warning("The query sent is not valid to be executed database.Please review the generated query.")
+                        DatabaseManager.logger.info(query)
+                        return False
+                    db_cursor.execute(query)
+                    self.close()
+                    DatabaseManager.logger.warning("Executed the query and closing connection")
+                    return True 
                 except Exception as e:
-                    print(f"Error: {str(e)}")        
-        self.close()
-
+                    print(f"Error: {str(e)}")   
+                    return False     
+        
     def close(self):
         """Closes the database connection."""
         if self.connection:
