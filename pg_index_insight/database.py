@@ -238,8 +238,7 @@ class DatabaseManager:
                     "index_name": index[2],
                     "index_size": index[4],
                     "index_scan": index[3],
-                    "last_scan": index[5],
-                    "category": "Unused/Retired Index",
+                    "category": "Unused Index",
                 }
                 old_index_list.append(old_index_dict)
         return old_index_list

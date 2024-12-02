@@ -9,7 +9,7 @@ from .database import DatabaseManager as DatabaseManager
 @click.command()
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str,default='/tmp/',show_default=True,help="Output file directory")
-def list_unused_or_old_indexes(json,output_path):
+def list_unused_indexes(json,output_path):
     """
     Connects to the PostgreSQL database and retrieves unused or redundant indexes. 
     This function queries the database for indexes that are not frequently scanned 
@@ -36,9 +36,7 @@ def list_unused_or_old_indexes(json,output_path):
                 item["schema_name"],
                 item["index_name"],
                 item["index_size"],
-                item["category"],                
-                item["index_scan"],
-                item["last_scan"],
+                item["category"],
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
             ]
@@ -49,11 +47,9 @@ def list_unused_or_old_indexes(json,output_path):
             "Schema Name",
             "Index Name",
             "Index Size",
-            "Index Scan Count",
-            "Last Scan Date",
             "Category",
-            "Replica Node Exists",
-            "Database Recovery Mode"
+            "Physical Replication Exists",
+            "Database Recovery Enabled"
         ]
         index_result_table = tabulate(
             table_formatted_index_result, index_table_headers, tablefmt="psql"
@@ -106,6 +102,9 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                     item["index_name"],
                     item["index_size"],
                     item["category"],
+                    database_query.replica_node_exists,
+                    database_query.recovery_status,
+                    
                 ]
                 for item in invalid_indexes
             ]
@@ -115,6 +114,8 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                 "Index Name",
                 "Index Size",
                 "Category",
+                "Physical Replication Exists",
+                "Database Recovery Enabled"
             ]
             index_result_table = tabulate(
                 table_formatted_index_result, index_table_headers, tablefmt="psql"
@@ -128,7 +129,7 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                 except Exception as e:
                     click.echo(f"Failed to export json, error: {str(e)} ")  
             if dry_run:
-                click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the commands wisely.''')
+                click.echo(f'''The following queries might be run on database: {database_name} to remove invalid indexes. Please run the following commands wisely.''')
                 drop_force=False
                 for index in invalid_indexes:
                     command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
@@ -179,7 +180,7 @@ def list_unemployed_indexes(json,dry_run,output_path):
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["schema_name"],item["index_name"],item["index_size"], item["category"]]
+            [item["database_name"], item["schema_name"],item["index_name"],item["index_size"], item["category"],database_query.replica_node_exists,database_query.recovery_status]
             for item in indexResult
         ]
         # append duplicate unique indexes
@@ -189,7 +190,9 @@ def list_unemployed_indexes(json,dry_run,output_path):
                 unique_index[0],
                 unique_index[2],
                 unique_index[4],
-                "Duplicate Unique Index"
+                "Duplicate Unique Index",
+                database_query.replica_node_exists,
+                database_query.recovery_status
             ])
 
         # append duplicate btree indexes
@@ -199,9 +202,11 @@ def list_unemployed_indexes(json,dry_run,output_path):
                 btree_index[0],
                 btree_index[2],
                 btree_index[4],
-                "Duplicate Btree Index"
+                "Duplicate Btree Index",
+                database_query.replica_node_exists,
+                database_query.recovery_status
             ])
-        index_table_headers = ["Database Name","Schema Name", "Index Name","Index Size", "Category"]
+        index_table_headers = ["Database Name","Schema Name", "Index Name","Index Size", "Category","Physical Replication Exists","Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_inefficient_index_{report_time}'''
         sorted_desc_index_list = sorted(table_formatted_index_result, key=lambda x: x[3],reverse=True)
@@ -217,7 +222,7 @@ def list_unemployed_indexes(json,dry_run,output_path):
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
         if dry_run:
-            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
             for index in sorted_desc_index_list:
                 command_executed=generate_command(index[0],index[1],index[2])
                 click.echo(command_executed)
@@ -255,10 +260,10 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold,output_path):
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"],item["schema_name"], item["index_name"],item["bloat_ratio"],item["category"]]
+            [item["database_name"],item["schema_name"], item["index_name"],item["bloat_ratio"],item["category"],databaseConnection.replica_node_exists,databaseConnection.recovery_status]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name","Schema Name","Index Name","Bloat Ratio", "Category"]
+        index_table_headers = ["Database Name","Schema Name","Index Name","Bloat Ratio", "Category","Physical Replication Exists","Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name=f'''{database_name}_bloated_index_{report_time}'''
         index_result_table = tabulate(
@@ -274,7 +279,7 @@ def list_bloated_btree_indexes(json,dry_run,bloat_threshold,output_path):
                 click.echo(f"Failed to export json, Error: {str(e)} ")
 
         if dry_run:
-            click.echo(f'''The following queries might be run on database: {database_name}. Please run the commands wisely.''')
+            click.echo(f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
             for index in indexResult:
                 command_executed=generate_command(index['category'],index['schema_name'],index['index_name'])
                 click.echo(command_executed)
@@ -292,7 +297,7 @@ def main():
     inefficient, invalid, unused, or bloated indexes. 
 
     Available commands include:
-    - list_unused_or_old_indexes: Lists indexes that are no longer in use.
+    - list_unused_indexes: Lists indexes that are no longer in use.
     - list_invalid_indexes: Identifies indexes that are misconfigured or corrupted.
     - list_duplicate_indexes: Finds duplicate B-tree indexes.
     - list_unemployed_indexes: Reports on indexes that are underperforming.
@@ -306,7 +311,7 @@ def main():
 main.add_command(list_bloated_btree_indexes)
 main.add_command(list_unemployed_indexes)
 main.add_command(list_invalid_indexes)
-main.add_command(list_unused_or_old_indexes)
+main.add_command(list_unused_indexes)
 
 if __name__ == '__main__':
     main()

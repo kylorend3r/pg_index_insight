@@ -99,7 +99,7 @@ pgindexinsight [command] [options]
 ## Examples
 
 ```bash
-pgindexinsight list-unused-or-old-indexes --json --output-path '/where/to/put/json/'
+pgindexinsight list-unused-indexes --json --output-path '/where/to/put/json/'
 pgindexinsight list-invalid-indexes --json --output-path '/where/to/put/json/' --dry-run
 pgindexinsight list-bloated-btree-indexes --json --output-path '/where/to/put/json/' --dry-run --bloat-threshold 5
 pgindexinsight list-unemployed-indexes --json --output-path '/where/to/put/json/' --dry-run
@@ -107,7 +107,7 @@ pgindexinsight list-unemployed-indexes --json --output-path '/where/to/put/json/
 
 ### Available Commands
 
-- `list-unused-or-old-indexes`: Lists unused or outdated indexes.
+- `list-unused-indexes`: Lists unused or outdated indexes.
     - Options:
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.

@@ -19,7 +19,6 @@ class SqlQueries:
                 pg_class AS t ON t.oid = idx.indrelid
             WHERE
                 s.idx_scan = 0
-                AND (last_idx_scan IS NULL OR last_idx_scan < NOW() - INTERVAL '1 year')
                 AND NOT idx.indisprimary
                 AND NOT idx.indisunique
         ),
@@ -74,8 +73,7 @@ class SqlQueries:
                 t.relname AS table_name,
                 i.relname AS index_name,
                 idx_scan AS index_scans,
-                pg_size_pretty(pg_relation_size(i.oid)) AS index_size,
-                last_idx_scan AS last_scan_date
+                pg_size_pretty(pg_relation_size(i.oid)) AS index_size
             FROM
                 pg_stat_user_indexes AS s
             JOIN
@@ -86,7 +84,6 @@ class SqlQueries:
                 pg_class AS t ON t.oid = idx.indrelid
             WHERE
                 s.idx_scan=0
-                AND (last_idx_scan IS NULL OR last_idx_scan < NOW() - INTERVAL '1 year')
                 AND NOT idx.indisprimary
                 AND NOT idx.indisunique
             ORDER BY
