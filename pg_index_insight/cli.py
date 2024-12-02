@@ -102,6 +102,9 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                     item["index_name"],
                     item["index_size"],
                     item["category"],
+                    database_query.replica_node_exists,
+                    database_query.recovery_status,
+                    
                 ]
                 for item in invalid_indexes
             ]
@@ -111,6 +114,8 @@ def list_invalid_indexes(dry_run,json,drop_force,output_path):
                 "Index Name",
                 "Index Size",
                 "Category",
+                "Physical Replication Exists",
+                "Database Recovery Enabled"
             ]
             index_result_table = tabulate(
                 table_formatted_index_result, index_table_headers, tablefmt="psql"
