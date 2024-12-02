@@ -36,9 +36,9 @@ def list_unused_or_old_indexes(json,output_path):
                 item["schema_name"],
                 item["index_name"],
                 item["index_size"],
-                item["category"],                
                 item["index_scan"],
                 item["last_scan"],
+                item["category"],
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
             ]
