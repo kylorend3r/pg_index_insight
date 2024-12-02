@@ -36,7 +36,6 @@ def list_unused_indexes(json,output_path):
                 item["schema_name"],
                 item["index_name"],
                 item["index_size"],
-                item["index_scan"],
                 item["category"],
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
@@ -48,7 +47,6 @@ def list_unused_indexes(json,output_path):
             "Schema Name",
             "Index Name",
             "Index Size",
-            "Index Scan Count",
             "Category",
             "Replica Node Exists",
             "Database Recovery Mode"
