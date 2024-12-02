@@ -288,7 +288,7 @@ def main():
     inefficient, invalid, unused, or bloated indexes. 
 
     Available commands include:
-    - list_unused_or_old_indexes: Lists indexes that are no longer in use.
+    - list_unused_indexes: Lists indexes that are no longer in use.
     - list_invalid_indexes: Identifies indexes that are misconfigured or corrupted.
     - list_duplicate_indexes: Finds duplicate B-tree indexes.
     - list_unemployed_indexes: Reports on indexes that are underperforming.
