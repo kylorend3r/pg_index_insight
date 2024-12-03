@@ -1,0 +1,13 @@
+databases:
+    - name: test-db-1
+      host: 1.1.1.1
+      port: 5432
+      dbname: your_db_1
+      user: your_user 
+      password: secret_pass
+    - name: test-db-2
+      host: 2.2.2.2
+      port: 5433
+      user: user_name
+      dbname: your_user
+      password: secret_pass
