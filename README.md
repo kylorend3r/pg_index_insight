@@ -78,17 +78,6 @@ GRANT SELECT ON TABLE pg_stats TO pg_index_insight_user;
 GRANT SELECT ON TABLE pg_indexes TO pg_index_insight_user;
 ```
 
-## Configure Environment Variables
-
-Before using this tool, you need to configure some environment variables. These variables are essential for connecting to your PostgreSQL database. Set them by running the following commands in your terminal:
-
-```bash
-export DB_HOST="localhost"
-export DB_PORT="5432"
-export DB_NAME="your_db_name"
-export DB_USER="your_user"
-export DB_PASSWORD="your_pass"
-```
 
 # Usage
 
@@ -96,35 +85,68 @@ export DB_PASSWORD="your_pass"
 pgindexinsight [command] [options]
 ```
 
+# Connection Configuration
+
+pgindexinsight loads databases connection properties from yaml file. You can specify your inventory like below and use 'name' field with --db-name flag.
+
+```yaml
+databases:
+    - name: test-db-1
+      host: 1.1.1.1
+      port: 5432
+      dbname: your_db_1
+      user: your_user 
+      password: secret_pass
+    - name: test-db-2
+      host: 2.2.2.2
+      port: 5433
+      user: user_name
+      dbname: your_user
+      password: secret_pass
+```
+#
+
 ## Examples
 
 ```bash
-pgindexinsight list-unused-indexes --json --output-path '/where/to/put/json/'
-pgindexinsight list-invalid-indexes --json --output-path '/where/to/put/json/' --dry-run
-pgindexinsight list-bloated-btree-indexes --json --output-path '/where/to/put/json/' --dry-run --bloat-threshold 5
-pgindexinsight list-unemployed-indexes --json --output-path '/where/to/put/json/' --dry-run
+pgindexinsight list-unused-indexes --db-name test-db-1 --json --output-path '/where/to/put/json/'
+pgindexinsight list-invalid-indexes --db-name test-db-2 --json --output-path '/where/to/put/json/' --dry-run
+pgindexinsight list-bloated-btree-indexes --db-name test-db-2 --json --output-path '/where/to/put/json/' --dry-run --bloat-threshold 5
+pgindexinsight list-unemployed-indexes --db-name test-db-1 --json --output-path '/where/to/put/json/' --dry-run
 ```
 
 ### Available Commands
 
 - `list-unused-indexes`: Lists unused or outdated indexes.
+    - Required:
+    	- --db-name: Database name in config.yaml
     - Options:
+        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
 - `list-invalid-indexes`: Identifies invalid indexes.
+    - Required:
+    	- --db-name: Database name in config.yaml
     - Options:
+        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
         - --drop-force: Drop invalid indexes. (User must be the owner or have superuser privileges.)
 - `list-unemployed-indexes`: Lists unused indexes.
+    - Required:
+    	- --db-name: Database name in config.yaml
     - Options:
+        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
 
 - `list-bloated-btree-indexes`: Reports on bloated B-tree indexes.
+    - Required:
+    	- --db-name: Database name in config.yaml
     - Options:
+        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
