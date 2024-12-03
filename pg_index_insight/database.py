@@ -93,24 +93,24 @@ class DatabaseManager:
 
     def run_query(self,queries):
         """Run query against Postgresql database. It takes list of queries."""
-        database_connection = self.connect()
-        with database_connection.cursor() as db_cursor:
-            for query in queries:
-                try:
-                    pattern = r"^(DROP INDEX CONCURRENTLY|REINDEX INDEX CONCURRENTLY)\b"
-                    is_query_valid=bool(re.match(pattern, query.strip(), re.IGNORECASE))
-                    if not is_query_valid:
-                        DatabaseManager.logger.warning("The query sent is not valid to be executed database.Please review the generated query.")
-                        DatabaseManager.logger.info(query)
+        for query in queries:
+            database_connection = self.connect()
+            with database_connection.cursor() as db_cursor:
+                    try:
+                        pattern = r"^(DROP INDEX CONCURRENTLY|REINDEX INDEX CONCURRENTLY)\b"
+                        is_query_valid=bool(re.match(pattern, query.strip(), re.IGNORECASE))
+                        if not is_query_valid:
+                            DatabaseManager.logger.warning("The query sent is not valid to be executed database.Please review the generated query.")
+                            DatabaseManager.logger.info(query)
+                            return False
+                        db_cursor.execute(query)
+                        self.close()
+                        DatabaseManager.logger.warning("Executed the query and closing connection")
+                    except Exception as e:
+                        print(f"Error: {str(e)}")
                         return False
-                    db_cursor.execute(query)
-                    self.close()
-                    DatabaseManager.logger.warning("Executed the query and closing connection")
-                    return True 
-                except Exception as e:
-                    print(f"Error: {str(e)}")   
-                    return False     
-        
+   
+
     def close(self):
         """Closes the database connection."""
         if self.connection:
