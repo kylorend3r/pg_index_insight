@@ -38,13 +38,12 @@ class DatabaseManager:
     MIN_SUPPORTED_VERSION = 16
     SYSTEM_DATABASE_LIST = ['postgres', 'template0', 'template1']
 
-
-    def __init__(self, config_file="db_config.yaml",db_name=None):
+    def __init__(self, db_name=None):
         self.connection = None
         self.replica_node_exists = None
         self.recovery_status = None
         self.database_version = None
-        self.config = self.load_config(config_file,db_name)
+        self.config = self.load_config(os.getenv("CONFIG_FILE", "db_config.yaml"),db_name)
         self.dbname = self.config.get("dbname")
         self.collect_facts()
 

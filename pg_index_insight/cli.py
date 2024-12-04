@@ -8,10 +8,9 @@ from .database import DatabaseManager as DatabaseManager
 
 @click.command()
 @click.option('--db-name', required=True, help='The name of the database to connect to.')
-@click.option('--config-file', default="db_config.yaml", help='Path to the configuration file.')
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str, default='/tmp/', show_default=True, help="Output file directory")
-def list_unused_indexes(json, output_path, config_file, db_name):
+def list_unused_indexes(json, output_path, db_name):
     """
     Connects to the PostgreSQL database and retrieves unused or redundant indexes.
     This function queries the database for indexes that are not frequently scanned
@@ -24,7 +23,7 @@ def list_unused_indexes(json, output_path, config_file, db_name):
     and exits gracefully.
     """
     try:
-        database_instance = DatabaseManager(config_file=config_file, db_name=db_name)
+        database_instance = DatabaseManager( db_name=db_name)
         duplicate_index_list = database_instance.fetch_unused_indexes()
         database_name = database_instance.dbname
         report_time = str.replace(str(time.time()), ".", "_")
@@ -70,13 +69,12 @@ def list_unused_indexes(json, output_path, config_file, db_name):
 
 @click.command()
 @click.option('--db-name', required=True, help='The name of the database to connect to.')
-@click.option('--config-file', default="db_config.yaml", help='Path to the configuration file.')
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str, default='/tmp/', show_default=True, help="Output file directory")
 @click.option("--drop-force", is_flag=True,
               help="Drop all invalid indexes. User must be the owner or have superuser privileges.")
-def list_invalid_indexes(dry_run, json, drop_force, output_path, config_file, db_name):
+def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
     """
     Connects to the PostgreSQL database and retrieves invalid indexes.
     Invalid indexes typically refer to indexes that are misconfigured,
@@ -90,7 +88,7 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, config_file, db
     """
 
     try:
-        database_query = DatabaseManager(config_file=config_file, db_name=db_name)
+        database_query = DatabaseManager( db_name=db_name)
         invalid_indexes = database_query.fetch_invalid_indexes()
         database_name = database_query.dbname
         report_time = str.replace(str(time.time()), ".", "_")
@@ -159,11 +157,10 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, config_file, db
 
 @click.command()
 @click.option('--db-name', required=True, help='The name of the database to connect to.')
-@click.option('--config-file', default="db_config.yaml", help='Path to the configuration file.')
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str, default='/tmp/', show_default=True, help="Output file directory")
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
-def list_unemployed_indexes(json, dry_run, output_path, config_file, db_name):
+def list_unemployed_indexes(json, dry_run, output_path, db_name):
     """
     Connects to the PostgreSQL database and identifies inefficient indexes,
     which may include unused or invalid indexes that do not contribute to query
@@ -181,7 +178,7 @@ def list_unemployed_indexes(json, dry_run, output_path, config_file, db_name):
         json (bool): A flag indicating whether to export the results as a JSON report.
     """
     try:
-        database_query = DatabaseManager(config_file=config_file, db_name=db_name)
+        database_query = DatabaseManager( db_name=db_name)
         indexResult = database_query.get_unused_and_invalid_indexes()
         duplicate_unique_indexes_result = database_query.fetch_duplicate_unique_indexes()
         duplicate_btree_indexes_result = database_query.fetch_duplicate_indexes()
@@ -246,12 +243,11 @@ def list_unemployed_indexes(json, dry_run, output_path, config_file, db_name):
 
 @click.command()
 @click.option('--db-name', required=True, help='The name of the database to connect to.')
-@click.option('--config-file', default="db_config.yaml", help='Path to the configuration file.')
 @click.option("--json", is_flag=True, help="Export output to JSON file.")
 @click.option("--output-path", type=str, default='/tmp/', show_default=True, help="Output file directory")
 @click.option('--dry-run', is_flag=True, help="Perform a dry run without making any changes.")
 @click.option('--bloat-threshold', type=int, default=50, help="Set the bloat threshold percentage for indexes.")
-def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, config_file, db_name):
+def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, db_name):
     """
     Connects to the PostgreSQL database and identifies bloated B-tree indexes.
     Bloated indexes occur when the index structure has a significant amount of
@@ -270,7 +266,7 @@ def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, conf
         json (bool): A flag indicating whether to export the results as a JSON report.
     """
     try:
-        databaseConnection = DatabaseManager(config_file=config_file, db_name=db_name)
+        databaseConnection = DatabaseManager(db_name=db_name)
         indexResult = databaseConnection.get_bloated_indexes(bloat_threshold)
         database_name = databaseConnection.dbname
         if not len(indexResult) > 0:
