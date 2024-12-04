@@ -87,6 +87,11 @@ pgindexinsight [command] [options]
 
 # Connection Configuration
 
+You can set env variable as below for config file path, by default pgindexinsight search for db_config.yaml in current directory.
+
+export CONFIG_FILE="/example/path/example.yaml"
+
+
 pgindexinsight loads databases connection properties from yaml file. You can specify your inventory like below and use 'name' field with --db-name flag.
 
 ```yaml
@@ -121,14 +126,12 @@ pgindexinsight list-unemployed-indexes --db-name test-db-1 --json --output-path 
     - Required:
     	- --db-name: Database name in config.yaml
     - Options:
-        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
 - `list-invalid-indexes`: Identifies invalid indexes.
     - Required:
     	- --db-name: Database name in config.yaml
     - Options:
-        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
@@ -137,7 +140,6 @@ pgindexinsight list-unemployed-indexes --db-name test-db-1 --json --output-path 
     - Required:
     	- --db-name: Database name in config.yaml
     - Options:
-        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
@@ -146,7 +148,6 @@ pgindexinsight list-unemployed-indexes --db-name test-db-1 --json --output-path 
     - Required:
     	- --db-name: Database name in config.yaml
     - Options:
-        - --config-file: Path for config file, (Default search in the current direction as db_config.yaml)
         - --dry-run: Display actions without executing them.
         - --json: Export output to a JSON file.
         - --output-path: JSON file output directory.
