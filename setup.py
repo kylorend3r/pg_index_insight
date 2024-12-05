@@ -15,7 +15,8 @@ setup(
     install_requires=[
         'click', 
         'psycopg2==2.9.9',
-        'tabulate'
+        'tabulate',
+        'pyyaml'
     ],
     entry_points={
         'console_scripts': [

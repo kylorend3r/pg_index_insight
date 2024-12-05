@@ -1,7 +1,7 @@
 import json
 import os
 
-def generate_index_report(data, report_name="Index Report",filename='index_report',report_path='/tmp/'):
+def generate_index_report(data, db_name, report_name="Index Report", filename='index_report', report_path='/tmp/'):
     """
     Generate a JSON report of index information.
 
@@ -12,16 +12,16 @@ def generate_index_report(data, report_name="Index Report",filename='index_repor
     Returns:
         str: JSON formatted string representing the index report.
     """
-    headers = ['Database Name','Schema Name', 'Index Name', 'Index Size', 'Category']
+    headers = ['Database Name', 'Schema Name', 'Index Name', 'Index Size', 'Category']
     indexes = [dict(zip(headers, row)) for row in data]
     report = {
         "report_name": report_name,
-        "database_name": os.getenv('DB_NAME'),
+        "database_name": db_name,
         "total_index_count": len(indexes),
         "indexes": indexes
     }
-    with open(f'''{report_path}{filename}.json''','w') as output_json:
-        json.dump(report,output_json,indent=4)
+    with open(f'''{report_path}{filename}.json''', 'w') as output_json:
+        json.dump(report, output_json, indent=4)
         return True
     return False
 
