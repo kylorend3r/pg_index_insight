@@ -88,9 +88,9 @@ pgindexinsight [command] [options]
 # Connection Configuration
 
 You can set env variable as below for config file path, by default pgindexinsight search for db_config.yaml in current directory.
-
+```bash
 export CONFIG_FILE="/example/path/example.yaml"
-
+```
 
 pgindexinsight loads databases connection properties from yaml file. You can specify your inventory like below and use 'name' field with --db-name flag.
 
