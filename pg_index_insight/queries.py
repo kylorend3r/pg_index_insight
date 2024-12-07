@@ -267,3 +267,19 @@ ORDER BY nspname, tblname, idxname;
                 ix.tablename;
     """
 
+    @staticmethod
+    def get_index_type_by_indexname(index_name):
+        """Returns a list of unique indexes which are valid,ready and unique"""
+        return f"""
+            SELECT
+                c.relname AS index_name,
+                am.amname AS index_type
+            FROM
+                pg_class c
+            JOIN
+                pg_index i ON c.oid = i.indexrelid
+            JOIN
+                pg_am am ON c.relam = am.oid
+            WHERE
+                c.relname = '{index_name}';
+    """
