@@ -12,7 +12,7 @@ def generate_index_report(data, db_name, report_name="Index Report", filename='i
     Returns:
         str: JSON formatted string representing the index report.
     """
-    headers = ['Database Name', 'Schema Name', 'Index Name', 'Index Size', 'Category']
+    headers = ['Database Name', 'Schema Name', 'Index Name', 'Index Type','Index Size', 'Category']
     indexes = [dict(zip(headers, row)) for row in data]
     report = {
         "report_name": report_name,

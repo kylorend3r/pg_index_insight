@@ -166,11 +166,14 @@ class DatabaseManager:
                 cur.execute(SqlQueries.find_unused_redundant_indexes())
                 unused_redundant_result = cur.fetchall()
                 for row in unused_redundant_result:
+                    cur.execute(SqlQueries.get_index_type_by_indexname(row[2]))
+                    index_type=cur.fetchone()[1]
                     final_result.append(
                         {
                             "database_name": self.dbname,
                             "schema_name": row[0],
                             "index_name": row[2],
+                            "index_type": index_type,
                             "index_size": row[4],
                             "category": "Unused&Redundant Index",
                         }
@@ -179,11 +182,14 @@ class DatabaseManager:
                 cur.execute(SqlQueries.find_invalid_indexes())
                 invalid_result = cur.fetchall()
                 for row in invalid_result:
+                    cur.execute(SqlQueries.get_index_type_by_indexname(row[2]))
+                    index_type=cur.fetchone()[1]
                     final_result.append(
                         {
                             "database_name": self.dbname,
                             "schema_name": row[0],
                             "index_name": row[2],
+                            "index_type": index_type,
                             "index_size": row[4],
                             "category": "Invalid Index",
                         }
@@ -207,10 +213,13 @@ class DatabaseManager:
                 bloated_indexes = cur.fetchall()
                 bloatedIndexList = []
                 for index in bloated_indexes:
+                    cur.execute(SqlQueries.get_index_type_by_indexname(index[3]))
+                    index_type=cur.fetchone()[1]
                     indexModel = {
                         "database_name": index[0],
                         "schema_name": index[1],
                         "index_name": index[3],
+                        "index_type": index_type,
                         "bloat_ratio": float(format(index[9], ".1f")),
                         "category": "Bloated",
                     }
@@ -232,10 +241,13 @@ class DatabaseManager:
             invalid_indexes = database_cursor.fetchall()
             invalid_index_list = []
             for index in invalid_indexes:
+                database_cursor.execute(SqlQueries.get_index_type_by_indexname(index[2]))
+                index_type=database_cursor.fetchone()[1]
                 invalid_index_dict = {
                     "database_name": self.dbname,
                     "schema_name": index[0],
                     "index_name": index[2],
+                    "index_type": index_type,
                     "index_size": index[4],
                     "category": "Invalid Index.",
                 }
@@ -252,10 +264,13 @@ class DatabaseManager:
             old_indexes = database_cursor.fetchall()
             old_index_list = []
             for index in old_indexes:
+                database_cursor.execute(SqlQueries.get_index_type_by_indexname(index[2]))
+                index_type=database_cursor.fetchone()[1]
                 old_index_dict = {
                     "database_name": self.dbname,
                     "schema_name": index[0],
                     "index_name": index[2],
+                    "index_type": index_type,
                     "index_size": index[4],
                     "index_scan": index[3],
                     "category": "Unused Index",
@@ -279,6 +294,9 @@ class DatabaseManager:
                 index_record = (schema_name, table_name, index_columns)
                 if index_record in current_indexes:
                     # if index record has been found in current_indexes list append index to duplicate_unique_indexes list.
+                    database_cursor.execute(SqlQueries.get_index_type_by_indexname(index[2]))
+                    index_type=database_cursor.fetchone()[1]
+                    index=index+(index_type,)
                     duplicate_unique_indexes.append(index)
                 else:
                     # if index record has not been found in current indexes add index_record to current_indexes list to
@@ -300,8 +318,12 @@ class DatabaseManager:
                 schema_name = index[0]
                 table_name = index[1]
                 index_record = (schema_name, table_name, index_columns)
+                #print(index_record)
                 if index_record in current_indexes:
                     # if index record has been found in current_indexes list append index to duplicate_unique_indexes list.
+                    database_cursor.execute(SqlQueries.get_index_type_by_indexname(index[2]))
+                    index_type=database_cursor.fetchone()[1]
+                    index=index+(index_type,)
                     duplicate_unique_indexes.append(index)
                 else:
                     # if index record has not been found in current indexes add index_record to current_indexes list to

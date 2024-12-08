@@ -156,19 +156,16 @@ pgindexinsight list-unemployed-indexes --db-name test-db-1 --json --output-path 
 Example Output for `list-unemployed-indexes`
 
 ```bash
-+-----------------+---------------+-------------------------------+--------------+------------------------+
-| Database Name   | Schema Name   | Index Name                    | Index Size   | Category               |
-|-----------------+---------------+-------------------------------+--------------+------------------------|
-| benchmark_v1    | public        | idx_test_v7                   | 545 MB       | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v6                   | 545 MB       | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v5                   | 545 MB       | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_v6                   | 545 MB       | Duplicate Btree Index  |
-| benchmark_v1    | public        | idx_test_v5                   | 545 MB       | Duplicate Btree Index  |
-| benchmark_v1    | sales         | orders_2023_q2_order_date_idx | 16 kB        | Unused&Redundant Index |
-| benchmark_v1    | public        | pgbench_accounts_pkey_v2      | 1285 MB      | Duplicate Unique Index |
-| benchmark_v1    | public        | idx_test_data                 | 0 bytes      | Unused&Redundant Index |
-| benchmark_v1    | public        | idx_test_data                 | 0 bytes      | Invalid Index          |
-+-----------------+---------------+-------------------------------+--------------+------------------------+
++-----------------+---------------+-----------------------+--------------+--------------+------------------------+-------------------------------+-----------------------------+
+| Database Name   | Schema Name   | Index Name            | Index Type   | Index Size   | Category               | Physical Replication Exists   | Database Recovery Enabled   |
+|-----------------+---------------+-----------------------+--------------+--------------+------------------------+-------------------------------+-----------------------------|
+| benchmark_v2    | public        | idx_user_id           | btree        | 16 kB        | Unused&Redundant Index | False                         | False                       |
+| benchmark_v2    | public        | idx_test_data         | btree        | 15 MB        | Invalid Index          | False                         | False                       |
+| benchmark_v2    | public        | pgbench_branches_pkey | btree        | 16 kB        | Duplicate Unique Index | False                         | False                       |
+| benchmark_v2    | public        | idx_d1                | btree        | 16 kB        | Duplicate Index        | False                         | False                       |
+| benchmark_v2    | public        | idx_product_name      | btree        | 16 kB        | Duplicate Index        | False                         | False                       |
+| benchmark_v2    | public        | idx_email             | btree        | 16 kB        | Duplicate Index        | False                         | False                       |
++-----------------+---------------+-----------------------+--------------+--------------+------------------------+-------------------------------+-----------------------------+
 ```
 
 ## Contributing

@@ -36,6 +36,7 @@ def list_unused_indexes(json, output_path, db_name):
                 item["database_name"],
                 item["schema_name"],
                 item["index_name"],
+                item["index_type"],
                 item["index_size"],
                 item["category"],
                 database_instance.replica_node_exists,
@@ -47,6 +48,7 @@ def list_unused_indexes(json, output_path, db_name):
             "Database Name",
             "Schema Name",
             "Index Name",
+            "Index Type",
             "Index Size",
             "Category",
             "Physical Replication Exists",
@@ -104,6 +106,7 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                     item["database_name"],
                     item["schema_name"],
                     item["index_name"],
+                    item["index_type"],
                     item["index_size"],
                     item["category"],
                     database_query.replica_node_exists,
@@ -116,6 +119,7 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                 "Database Name",
                 "Schema Name",
                 "Index Name",
+                "Index Type",
                 "Index Size",
                 "Category",
                 "Physical Replication Exists",
@@ -188,7 +192,7 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["schema_name"], item["index_name"], item["index_size"], item["category"],
+            [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["index_size"], item["category"],
              database_query.replica_node_exists, database_query.recovery_status]
             for item in indexResult
         ]
@@ -198,24 +202,26 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
                 database_name,
                 unique_index[0],
                 unique_index[2],
+                unique_index[5],
                 unique_index[4],
                 "Duplicate Unique Index",
                 database_query.replica_node_exists,
                 database_query.recovery_status
             ])
 
-        # append duplicate btree indexes
+        # append Duplicate Indexes
         for btree_index in duplicate_btree_indexes_result:
             table_formatted_index_result.append([
                 database_name,
                 btree_index[0],
                 btree_index[2],
+                btree_index[5],
                 btree_index[4],
-                "Duplicate Btree Index",
+                "Duplicate Index",
                 database_query.replica_node_exists,
                 database_query.recovery_status
             ])
-        index_table_headers = ["Database Name", "Schema Name", "Index Name", "Index Size", "Category",
+        index_table_headers = ["Database Name", "Schema Name", "Index Name","Index Type", "Index Size", "Category",
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_inefficient_index_{report_time}'''
@@ -273,11 +279,11 @@ def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, db_n
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
         table_formatted_index_result = [
-            [item["database_name"], item["schema_name"], item["index_name"], item["bloat_ratio"], item["category"],
+            [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["bloat_ratio"], item["category"],
              databaseConnection.replica_node_exists, databaseConnection.recovery_status]
             for item in indexResult
         ]
-        index_table_headers = ["Database Name", "Schema Name", "Index Name", "Bloat Ratio", "Category",
+        index_table_headers = ["Database Name", "Schema Name", "Index Name","Index Type", "Bloat Ratio", "Category",
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_bloated_index_{report_time}'''
