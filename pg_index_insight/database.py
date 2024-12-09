@@ -35,7 +35,7 @@ class DatabaseManager:
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    MIN_SUPPORTED_VERSION = 16
+    MIN_SUPPORTED_VERSION = 13
     SYSTEM_DATABASE_LIST = ['postgres', 'template0', 'template1']
 
     def __init__(self, db_name=None):
