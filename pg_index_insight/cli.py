@@ -104,7 +104,7 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
 
         if not len(invalid_indexes) == 0:
 
-            table_formatted_index_result = [
+            invalid_index_data_to_be_tabulated = [
                 [
                     item["database_name"],
                     item["schema_name"],
@@ -129,15 +129,18 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                 "Database Recovery Enabled"
             ]
             index_result_table = tabulate(
-                table_formatted_index_result, index_table_headers, tablefmt="psql"
+                invalid_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
             )
             click.echo(index_result_table)
             if json:
                 try:
                     jsonReport = generate_index_report(
-                        table_formatted_index_result, filename=json_report_name, report_path=output_path,
+                        invalid_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path,
                         db_name=db_name
                     )
+                    if not jsonReport:
+                        click.echo(f"Failed to export json.")
+                        exit(1)
                 except Exception as e:
                     click.echo(f"Failed to export json, error: {str(e)} ")
             if dry_run:
