@@ -54,10 +54,10 @@ def list_unused_indexes(json, output_path, db_name):
             "Physical Replication Exists",
             "Database Recovery Enabled"
         ]
-        index_result_table = tabulate(
+        unused_index_result_table = tabulate(
             unused_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(unused_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
@@ -128,10 +128,10 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                 "Physical Replication Exists",
                 "Database Recovery Enabled"
             ]
-            index_result_table = tabulate(
+            invalid_index_result_table = tabulate(
                 invalid_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
             )
-            click.echo(index_result_table)
+            click.echo(invalid_index_result_table)
             if json:
                 try:
                     jsonReport = generate_index_report(
@@ -232,10 +232,10 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_inefficient_index_{report_time}'''
         sorted_desc_index_list = sorted(unemployed_index_data_to_be_tabulated, key=lambda x: x[3], reverse=True)
-        index_result_table = tabulate(
+        unemployed_index_result_table = tabulate(
             sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(unemployed_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
