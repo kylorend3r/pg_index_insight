@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pg_index_insight',
     version='v1.5.0',
-    author='Huseyin Demir',
+    author='Huseyin Demir,Mert Yavaşca',
     author_email='huseyin.d3r@gmail.com',
     description='A CLI tool for analyzing PostgreSQL index efficiency',
     long_description=open('README.md').read(),
