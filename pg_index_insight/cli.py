@@ -282,36 +282,39 @@ def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, db_n
     """
     try:
         databaseConnection = DatabaseManager(db_name=db_name)
-        indexResult = databaseConnection.get_bloated_indexes(bloat_threshold)
+        bloated_index_list = databaseConnection.get_bloated_indexes(bloat_threshold)
         database_name = databaseConnection.dbname
-        if not len(indexResult) > 0:
+        if not len(bloated_index_list) > 0:
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        bloated_index_data_to_be_tabulated = [
             [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["bloat_ratio"], item["category"],
              databaseConnection.replica_node_exists, databaseConnection.recovery_status]
-            for item in indexResult
+            for item in bloated_index_list
         ]
         index_table_headers = ["Database Name", "Schema Name", "Index Name","Index Type", "Bloat Ratio", "Category",
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_bloated_index_{report_time}'''
-        index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
+        bloated_index_result_table = tabulate(
+            bloated_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(bloated_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    bloated_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, Error: {str(e)} ")
 
         if dry_run:
             click.echo(
                 f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
-            for index in indexResult:
+            for index in bloated_index_list:
                 command_executed = generate_command(index['category'], index['schema_name'], index['index_name'])
                 click.echo(command_executed)
 
