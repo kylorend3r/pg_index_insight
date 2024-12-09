@@ -24,14 +24,14 @@ def list_unused_indexes(json, output_path, db_name):
     """
     try:
         database_instance = DatabaseManager( db_name=db_name)
-        duplicate_index_list = database_instance.fetch_unused_indexes()
+        unused_index_list = database_instance.fetch_unused_indexes()
         database_name = database_instance.dbname
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_unused_old_index_{report_time}'''
-        if not len(duplicate_index_list) > 0:
+        if not len(unused_index_list) > 0:
             click.echo(f'No unused or old index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        unused_index_data_to_be_tabulated = [
             [
                 item["database_name"],
                 item["schema_name"],
@@ -42,7 +42,7 @@ def list_unused_indexes(json, output_path, db_name):
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
             ]
-            for item in duplicate_index_list
+            for item in unused_index_list
         ]
         index_table_headers = [
             "Database Name",
@@ -55,14 +55,17 @@ def list_unused_indexes(json, output_path, db_name):
             "Database Recovery Enabled"
         ]
         index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
+            unused_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
         )
         click.echo(index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    unused_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
     except Exception as e:
