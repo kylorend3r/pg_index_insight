@@ -189,22 +189,22 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
     """
     try:
         database_query = DatabaseManager( db_name=db_name)
-        indexResult = database_query.get_unused_and_invalid_indexes()
-        duplicate_unique_indexes_result = database_query.fetch_duplicate_unique_indexes()
-        duplicate_btree_indexes_result = database_query.fetch_duplicate_indexes()
+        unused_invalid_index_list = database_query.get_unused_and_invalid_indexes()
+        duplicate_unique_index_list = database_query.fetch_duplicate_unique_indexes()
+        duplicate_btree_index_list = database_query.fetch_duplicate_indexes()
         database_name = database_query.dbname
-        if len(indexResult) == 0 and len(duplicate_unique_indexes_result) == 0 and len(
-                duplicate_btree_indexes_result) == 0:
+        if len(unused_invalid_index_list) == 0 and len(duplicate_unique_index_list) == 0 and len(
+                duplicate_btree_index_list) == 0:
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        unemployed_index_data_to_be_tabulated = [
             [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["index_size"], item["category"],
              database_query.replica_node_exists, database_query.recovery_status]
-            for item in indexResult
+            for item in unused_invalid_index_list
         ]
         # append duplicate unique indexes
-        for unique_index in duplicate_unique_indexes_result:
-            table_formatted_index_result.append([
+        for unique_index in duplicate_unique_index_list:
+            unemployed_index_data_to_be_tabulated.append([
                 database_name,
                 unique_index[0],
                 unique_index[2],
@@ -216,8 +216,8 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
             ])
 
         # append Duplicate Indexes
-        for btree_index in duplicate_btree_indexes_result:
-            table_formatted_index_result.append([
+        for btree_index in duplicate_btree_index_list:
+            unemployed_index_data_to_be_tabulated.append([
                 database_name,
                 btree_index[0],
                 btree_index[2],
@@ -231,7 +231,7 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_inefficient_index_{report_time}'''
-        sorted_desc_index_list = sorted(table_formatted_index_result, key=lambda x: x[3], reverse=True)
+        sorted_desc_index_list = sorted(unemployed_index_data_to_be_tabulated, key=lambda x: x[3], reverse=True)
         index_result_table = tabulate(
             sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
@@ -239,8 +239,11 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    unemployed_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
         if dry_run:
