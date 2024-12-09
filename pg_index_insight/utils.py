@@ -1,7 +1,7 @@
 import json
 import os
 
-def generate_index_report(data, db_name, report_name="Index Report", filename='index_report', report_path='/tmp/'):
+def generate_index_report(data, db_name, report_name="index_report", filename='index_report', report_path='/tmp/'):
     """
     Generate a JSON report of index information.
 
