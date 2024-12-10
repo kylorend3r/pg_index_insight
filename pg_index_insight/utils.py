@@ -1,7 +1,7 @@
 import json
 import os
 
-def generate_index_report(data, db_name, report_name="Index Report", filename='index_report', report_path='/tmp/'):
+def generate_index_report(data, db_name, report_name="index_report", filename='index_report', report_path='/tmp/'):
     """
     Generate a JSON report of index information.
 
@@ -26,10 +26,16 @@ def generate_index_report(data, db_name, report_name="Index Report", filename='i
     return False
 
 def generate_command(category,schema_name,index_name):
-    
-    if category=="Bloated":
-        execute_sql=f'''REINDEX INDEX CONCURRENTLY {schema_name}.{index_name};'''
-        return execute_sql
-    else:
-        execute_sql=f'''DROP INDEX CONCURRENTLY {schema_name}.{index_name};'''
-        return execute_sql
+    """
+    Generate an SQL command based on the category.
+
+    Parameters:
+        category (str): The category of the operation ('Bloated' or other).
+        schema_name (str): The schema name of the index.
+        index_name (str): The name of the index.
+
+    Returns:
+        str: The SQL command to execute.
+    """
+    operation = "REINDEX INDEX CONCURRENTLY" if category == "Bloated" else "DROP INDEX CONCURRENTLY"
+    return f"{operation} {schema_name}.{index_name};"
