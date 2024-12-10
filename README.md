@@ -31,7 +31,7 @@ pgindexinsight offers a simple yet powerful way to ensure that your PostgreSQL i
 # Requirements
 
 - Python 3.6 or higher
-- PostgreSQL 16 or higher
+- PostgreSQL 13 or higher
 - Required Python packages (listed in `requirements.txt`)
 
 # Installation
