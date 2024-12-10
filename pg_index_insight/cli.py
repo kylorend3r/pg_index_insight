@@ -24,14 +24,14 @@ def list_unused_indexes(json, output_path, db_name):
     """
     try:
         database_instance = DatabaseManager( db_name=db_name)
-        duplicate_index_list = database_instance.fetch_unused_indexes()
+        unused_index_list = database_instance.fetch_unused_indexes()
         database_name = database_instance.dbname
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_unused_old_index_{report_time}'''
-        if not len(duplicate_index_list) > 0:
+        if not len(unused_index_list) > 0:
             click.echo(f'No unused or old index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        unused_index_data_to_be_tabulated = [
             [
                 item["database_name"],
                 item["schema_name"],
@@ -42,7 +42,7 @@ def list_unused_indexes(json, output_path, db_name):
                 database_instance.replica_node_exists,
                 database_instance.recovery_status,
             ]
-            for item in duplicate_index_list
+            for item in unused_index_list
         ]
         index_table_headers = [
             "Database Name",
@@ -54,15 +54,18 @@ def list_unused_indexes(json, output_path, db_name):
             "Physical Replication Exists",
             "Database Recovery Enabled"
         ]
-        index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
+        unused_index_result_table = tabulate(
+            unused_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(unused_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    unused_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
     except Exception as e:
@@ -101,7 +104,7 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
 
         if not len(invalid_indexes) == 0:
 
-            table_formatted_index_result = [
+            invalid_index_data_to_be_tabulated = [
                 [
                     item["database_name"],
                     item["schema_name"],
@@ -125,16 +128,19 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                 "Physical Replication Exists",
                 "Database Recovery Enabled"
             ]
-            index_result_table = tabulate(
-                table_formatted_index_result, index_table_headers, tablefmt="psql"
+            invalid_index_result_table = tabulate(
+                invalid_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
             )
-            click.echo(index_result_table)
+            click.echo(invalid_index_result_table)
             if json:
                 try:
                     jsonReport = generate_index_report(
-                        table_formatted_index_result, filename=json_report_name, report_path=output_path,
+                        invalid_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path,
                         db_name=db_name
                     )
+                    if not jsonReport:
+                        click.echo(f"Failed to export json.")
+                        exit(1)
                 except Exception as e:
                     click.echo(f"Failed to export json, error: {str(e)} ")
             if dry_run:
@@ -183,22 +189,22 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
     """
     try:
         database_query = DatabaseManager( db_name=db_name)
-        indexResult = database_query.get_unused_and_invalid_indexes()
-        duplicate_unique_indexes_result = database_query.fetch_duplicate_unique_indexes()
-        duplicate_btree_indexes_result = database_query.fetch_duplicate_indexes()
+        unused_invalid_index_list = database_query.get_unused_and_invalid_indexes()
+        duplicate_unique_index_list = database_query.fetch_duplicate_unique_indexes()
+        duplicate_btree_index_list = database_query.fetch_duplicate_indexes()
         database_name = database_query.dbname
-        if len(indexResult) == 0 and len(duplicate_unique_indexes_result) == 0 and len(
-                duplicate_btree_indexes_result) == 0:
+        if len(unused_invalid_index_list) == 0 and len(duplicate_unique_index_list) == 0 and len(
+                duplicate_btree_index_list) == 0:
             click.echo(f'No inefficient index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        unemployed_index_data_to_be_tabulated = [
             [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["index_size"], item["category"],
              database_query.replica_node_exists, database_query.recovery_status]
-            for item in indexResult
+            for item in unused_invalid_index_list
         ]
         # append duplicate unique indexes
-        for unique_index in duplicate_unique_indexes_result:
-            table_formatted_index_result.append([
+        for unique_index in duplicate_unique_index_list:
+            unemployed_index_data_to_be_tabulated.append([
                 database_name,
                 unique_index[0],
                 unique_index[2],
@@ -210,8 +216,8 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
             ])
 
         # append Duplicate Indexes
-        for btree_index in duplicate_btree_indexes_result:
-            table_formatted_index_result.append([
+        for btree_index in duplicate_btree_index_list:
+            unemployed_index_data_to_be_tabulated.append([
                 database_name,
                 btree_index[0],
                 btree_index[2],
@@ -225,16 +231,19 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_inefficient_index_{report_time}'''
-        sorted_desc_index_list = sorted(table_formatted_index_result, key=lambda x: x[3], reverse=True)
-        index_result_table = tabulate(
+        sorted_desc_index_list = sorted(unemployed_index_data_to_be_tabulated, key=lambda x: x[3], reverse=True)
+        unemployed_index_result_table = tabulate(
             sorted_desc_index_list, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(unemployed_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    unemployed_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, error: {str(e)} ")
         if dry_run:
@@ -273,36 +282,39 @@ def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, db_n
     """
     try:
         databaseConnection = DatabaseManager(db_name=db_name)
-        indexResult = databaseConnection.get_bloated_indexes(bloat_threshold)
+        bloated_index_list = databaseConnection.get_bloated_indexes(bloat_threshold)
         database_name = databaseConnection.dbname
-        if not len(indexResult) > 0:
+        if not len(bloated_index_list) > 0:
             click.echo(f'No bloated index found for database: {database_name}')
             exit(0)
-        table_formatted_index_result = [
+        bloated_index_data_to_be_tabulated = [
             [item["database_name"], item["schema_name"], item["index_name"],item['index_type'], item["bloat_ratio"], item["category"],
              databaseConnection.replica_node_exists, databaseConnection.recovery_status]
-            for item in indexResult
+            for item in bloated_index_list
         ]
         index_table_headers = ["Database Name", "Schema Name", "Index Name","Index Type", "Bloat Ratio", "Category",
                                "Physical Replication Exists", "Database Recovery Enabled"]
         report_time = str.replace(str(time.time()), ".", "_")
         json_report_name = f'''{database_name}_bloated_index_{report_time}'''
-        index_result_table = tabulate(
-            table_formatted_index_result, index_table_headers, tablefmt="psql"
+        bloated_index_result_table = tabulate(
+            bloated_index_data_to_be_tabulated, index_table_headers, tablefmt="psql"
         )
-        click.echo(index_result_table)
+        click.echo(bloated_index_result_table)
         if json:
             try:
                 jsonReport = generate_index_report(
-                    table_formatted_index_result, filename=json_report_name, report_path=output_path, db_name=db_name
+                    bloated_index_data_to_be_tabulated, filename=json_report_name, report_path=output_path, db_name=db_name
                 )
+                if not jsonReport:
+                    click.echo(f"Failed to export json.")
+                    exit(1)
             except Exception as e:
                 click.echo(f"Failed to export json, Error: {str(e)} ")
 
         if dry_run:
             click.echo(
                 f'''The following queries might be run on database: {database_name}. Please run the following commands wisely.''')
-            for index in indexResult:
+            for index in bloated_index_list:
                 command_executed = generate_command(index['category'], index['schema_name'], index['index_name'])
                 click.echo(command_executed)
 
