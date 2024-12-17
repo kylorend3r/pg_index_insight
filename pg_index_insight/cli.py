@@ -150,6 +150,14 @@ def list_invalid_indexes(dry_run, json, drop_force, output_path, db_name):
                 for index in invalid_indexes:
                     command_executed = generate_command(index['category'], index['schema_name'], index['index_name'])
                     click.echo(command_executed)
+
+                click.echo(
+                    f'''The following queries might be run on database: {database_name} to recreate dropped indexes. Please run the following commands wisely.'''
+                )
+                for index in invalid_indexes:
+                    create_command = database_query.get_index_create_statement(index['schema_name'],index['index_name'])
+                    click.echo(create_command)
+
             if drop_force:
                 click.echo(f'''Following queries are running on database: {database_name}.''')
                 commands_for_execute = []
@@ -252,6 +260,13 @@ def list_unemployed_indexes(json, dry_run, output_path, db_name):
             for index in sorted_desc_index_list:
                 command_executed = generate_command(index[0], index[1], index[2])
                 click.echo(command_executed)
+
+            click.echo(
+                f'''The following queries might be run on database: {database_name} to recreate dropped indexes. Please run the following commands wisely.'''
+                )
+            for index in sorted_desc_index_list:
+                create_command = database_query.get_index_create_statement(index[1], index[2])
+                click.echo(create_command)
     except Exception as e:
         click.echo(f"Error: {str(e)}")
 
@@ -317,6 +332,13 @@ def list_bloated_btree_indexes(json, dry_run, bloat_threshold, output_path, db_n
             for index in bloated_index_list:
                 command_executed = generate_command(index['category'], index['schema_name'], index['index_name'])
                 click.echo(command_executed)
+
+            click.echo(
+                f'''The following queries might be run on database: {database_name} to recreate dropped indexes. Please run the following commands wisely.'''
+                )
+            for index in bloated_index_list:
+                create_command = databaseConnection.get_index_create_statement(index['schema_name'],index['index_name'])
+                click.echo(create_command)
 
     except Exception as e:
         click.echo(f"Error: {str(e)}")

@@ -283,3 +283,15 @@ ORDER BY nspname, tblname, idxname;
             WHERE
                 c.relname = '{index_name}';
     """
+
+    @staticmethod
+    def get_index_ddl(schema_name,index_name):
+        """Returns create statement of index"""
+        return f"""
+            SELECT
+            indexdef || ';'
+            FROM
+                pg_indexes
+            WHERE
+                schemaname = '{schema_name}' and indexname = '{index_name}';
+    """

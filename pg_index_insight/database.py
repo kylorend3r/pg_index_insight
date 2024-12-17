@@ -330,3 +330,12 @@ class DatabaseManager:
                     # compare later.
                     current_indexes.add(index_record)
         return duplicate_unique_indexes
+        
+    def get_index_create_statement(self,schema_name,index_name):
+        """Get Index create statement from pg_indexes view"""
+        self._check_version_supported()
+        database_connection = self.connect()
+        with database_connection.cursor() as database_cursor:
+            database_cursor.execute(SqlQueries.get_index_ddl(schema_name,index_name))
+            index_create_ddl_list = database_cursor.fetchone()
+        return index_create_ddl_list[0]
