@@ -338,4 +338,7 @@ class DatabaseManager:
         with database_connection.cursor() as database_cursor:
             database_cursor.execute(SqlQueries.get_index_ddl(schema_name,index_name))
             index_create_ddl_list = database_cursor.fetchone()
-        return index_create_ddl_list[0]
+            index_create_definition=str(index_create_ddl_list[0]).split(" ")
+            index_create_definition.insert(2,"CONCURRENTLY")
+            index_definition_to_be_suggested = " ".join(index_create_definition)
+        return index_definition_to_be_suggested
