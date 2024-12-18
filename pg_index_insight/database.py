@@ -339,6 +339,10 @@ class DatabaseManager:
             database_cursor.execute(SqlQueries.get_index_ddl(schema_name,index_name))
             index_create_ddl_list = database_cursor.fetchone()
             index_create_definition=str(index_create_ddl_list[0]).split(" ")
-            index_create_definition.insert(2,"CONCURRENTLY")
+            if "UNIQUE" in index_create_definition:
+                index_create_definition.insert(3,"CONCURRENTLY")
+            else:
+                index_create_definition.insert(2,"CONCURRENTLY")
+
             index_definition_to_be_suggested = " ".join(index_create_definition)
         return index_definition_to_be_suggested
