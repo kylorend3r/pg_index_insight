@@ -330,3 +330,19 @@ class DatabaseManager:
                     # compare later.
                     current_indexes.add(index_record)
         return duplicate_unique_indexes
+        
+    def get_index_create_statement(self,schema_name,index_name):
+        """Get Index create statement from pg_indexes view"""
+        self._check_version_supported()
+        database_connection = self.connect()
+        with database_connection.cursor() as database_cursor:
+            database_cursor.execute(SqlQueries.get_index_ddl(schema_name,index_name))
+            index_create_ddl_list = database_cursor.fetchone()
+            index_create_definition=str(index_create_ddl_list[0]).split(" ")
+            if "UNIQUE" in index_create_definition:
+                index_create_definition.insert(3,"CONCURRENTLY")
+            else:
+                index_create_definition.insert(2,"CONCURRENTLY")
+
+            index_definition_to_be_suggested = " ".join(index_create_definition)
+        return index_definition_to_be_suggested

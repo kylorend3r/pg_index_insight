@@ -4,7 +4,7 @@ setup(
     name='pg_index_insight',
     version='v1.5.0',
     author='Huseyin Demir,Mert Yavaşca',
-    author_email='huseyin.d3r@gmail.com',
+    author_email='huseyin.d3r@gmail.com,mert_yavasca@hotmail.com',
     description='A CLI tool for analyzing PostgreSQL index efficiency',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
